@@ -37,17 +37,25 @@ import {
   ShoppingBag,
   Smile,
   UtensilsCrossed,
+  Hammer,
+  Lightbulb,
+  Scissors,
+  Shirt,
+  Plane,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { cn } from '@/lib/utils';
 
 const categoryIcons: Record<(typeof expenseCategories)[number], React.ElementType> = {
-  Food: UtensilsCrossed,
-  Transport: Car,
-  Shopping: ShoppingBag,
-  Housing: Home,
-  Health: HeartPulse,
-  Other: MoreHorizontal,
+  "Cooking/Groceries": UtensilsCrossed,
+  "Eating Out": ShoppingBag,
+  "Transportation": Car,
+  "Projects": Hammer,
+  "Utilities": Lightbulb,
+  "Beauty/Grooming": Scissors,
+  "Clothing": Shirt,
+  "Travel/Adventure": Plane,
+  "Other": MoreHorizontal,
 };
 
 const moodIcons: Record<(typeof expenseMoods)[number], React.ElementType> = {

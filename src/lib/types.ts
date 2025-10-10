@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const expenseCategories = ["Food", "Transport", "Shopping", "Housing", "Health", "Other"] as const;
+export const expenseCategories = ["Cooking/Groceries", "Eating Out", "Transportation", "Projects", "Utilities", "Beauty/Grooming", "Clothing", "Travel/Adventure", "Other"] as const;
 export const expenseMoods = ["Happy", "Neutral", "Sad"] as const;
 
 export const expenseSchema = z.object({
