@@ -40,7 +40,8 @@ import {
   Zap,
   Users,
   ClipboardCheck,
-  Gift
+  Gift,
+  Home
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { cn } from '@/lib/utils';
@@ -63,6 +64,7 @@ const purchaseTypeIcons: Record<(typeof expensePurchaseTypes)[number], React.Ele
   Social: Users,
   Necessary: ClipboardCheck,
   Treat: Gift,
+  Family: Home,
 };
 
 export function LogExpenseForm() {

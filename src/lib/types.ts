@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const expenseCategories = ["Cooking/Groceries", "Eating Out", "Transportation", "Projects", "Utilities", "Beauty/Grooming", "Clothing", "Travel/Adventure", "Other"] as const;
-export const expensePurchaseTypes = ["Planned", "Impulse", "Social", "Necessary", "Treat"] as const;
+export const expensePurchaseTypes = ["Planned", "Impulse", "Social", "Necessary", "Treat", "Family"] as const;
 
 export const expenseSchema = z.object({
   amount: z.coerce
