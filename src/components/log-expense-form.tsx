@@ -100,7 +100,7 @@ export function LogExpenseForm() {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                  <FormLabel className="text-center block">Amount</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="0.00" {...field} step="0.01" />
                   </FormControl>
