@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -113,7 +114,7 @@ export function LogExpenseForm() {
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel className="text-center block">Category</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
