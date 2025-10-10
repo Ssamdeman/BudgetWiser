@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const expenseCategories = ["Cooking/Groceries", "Eating Out", "Transportation", "Projects", "Utilities", "Beauty/Grooming", "Clothing", "Travel/Adventure", "Other"] as const;
-export const expenseMoods = ["Happy", "Neutral", "Sad"] as const;
+export const expensePurchaseTypes = ["Planned", "Impulse", "Social", "Necessary", "Treat"] as const;
 
 export const expenseSchema = z.object({
   amount: z.coerce
@@ -11,7 +11,7 @@ export const expenseSchema = z.object({
   category: z.enum(expenseCategories, {
     required_error: "Please select a category.",
   }),
-  mood: z.enum(expenseMoods, { required_error: "Please select your mood." }),
+  purchaseType: z.enum(expensePurchaseTypes, { required_error: "Please select the purchase type." }),
 });
 
 export type Expense = z.infer<typeof expenseSchema>;

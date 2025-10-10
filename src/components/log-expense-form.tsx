@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { logExpenseAction } from '@/app/actions';
-import { expenseCategories, expenseMoods, expenseSchema } from '@/lib/types';
+import { expenseCategories, expensePurchaseTypes, expenseSchema } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -28,20 +28,19 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import {
   Car,
-  Frown,
-  HeartPulse,
-  Home,
-  Loader2,
-  Meh,
+  Lightbulb,
   MoreHorizontal,
   ShoppingBag,
-  Smile,
   UtensilsCrossed,
   Hammer,
-  Lightbulb,
   Scissors,
   Shirt,
   Plane,
+  CalendarCheck,
+  Zap,
+  Users,
+  ClipboardCheck,
+  Gift
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { cn } from '@/lib/utils';
@@ -58,10 +57,12 @@ const categoryIcons: Record<(typeof expenseCategories)[number], React.ElementTyp
   "Other": MoreHorizontal,
 };
 
-const moodIcons: Record<(typeof expenseMoods)[number], React.ElementType> = {
-  Happy: Smile,
-  Neutral: Meh,
-  Sad: Frown,
+const purchaseTypeIcons: Record<(typeof expensePurchaseTypes)[number], React.ElementType> = {
+  Planned: CalendarCheck,
+  Impulse: Zap,
+  Social: Users,
+  Necessary: ClipboardCheck,
+  Treat: Gift,
 };
 
 export function LogExpenseForm() {
@@ -73,7 +74,7 @@ export function LogExpenseForm() {
     defaultValues: {
       amount: undefined,
       category: undefined,
-      mood: undefined,
+      purchaseType: undefined,
     },
   });
 
@@ -149,31 +150,31 @@ export function LogExpenseForm() {
             />
             <FormField
               control={form.control}
-              name="mood"
+              name="purchaseType"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>How did you feel about this purchase?</FormLabel>
+                  <FormLabel>What type of purchase was this?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex justify-around pt-2"
+                      className="grid grid-cols-3 gap-4 pt-2"
                     >
-                      {expenseMoods.map((mood) => {
-                        const Icon = moodIcons[mood];
+                      {expensePurchaseTypes.map((purchaseType) => {
+                        const Icon = purchaseTypeIcons[purchaseType];
                         return (
-                          <FormItem key={mood} className="flex items-center space-x-3 space-y-0">
+                          <FormItem key={purchaseType} className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value={mood} className="sr-only" />
+                              <RadioGroupItem value={purchaseType} className="sr-only" />
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors',
-                                field.value === mood ? 'border-accent' : ''
+                                'flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors w-full',
+                                field.value === purchaseType ? 'border-accent' : ''
                               )}
                             >
                               <Icon className="h-8 w-8 mb-2" />
-                              {mood}
+                              {purchaseType}
                             </FormLabel>
                           </FormItem>
                         );
@@ -185,7 +186,7 @@ export function LogExpenseForm() {
               )}
             />
             <Button type="submit" disabled={isPending} className="w-full">
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isPending ? <div className="mr-2 h-4 w-4 animate-spin border-2 border-background border-t-transparent rounded-full" /> : null}
               Log Expense
             </Button>
           </form>
