@@ -45,15 +45,15 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="flex w-full bg-muted/50 p-1 rounded-lg mb-4">
+      <div className="relative flex w-full bg-muted p-1 rounded-full mb-4 border border-border backdrop-blur-sm bg-opacity-50">
         {tabs.map((tab, index) => (
           <Button
             key={tab.name}
-            variant={activeTab === index ? 'default' : 'ghost'}
+            variant={'ghost'}
             onClick={() => handleTabClick(index)}
             className={cn(
-              'w-full transition-all duration-300',
-              activeTab === index ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+              'w-full transition-all duration-300 rounded-full z-10',
+              activeTab === index ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground'
             )}
           >
             {tab.name}
