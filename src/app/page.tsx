@@ -27,7 +27,6 @@ export default function Home() {
         </div>
       </main>
       <footer className="text-center p-4 text-xs text-muted-foreground">
-        <p>Built with ❤️ for simple expense tracking.</p>
       </footer>
     </div>
   );

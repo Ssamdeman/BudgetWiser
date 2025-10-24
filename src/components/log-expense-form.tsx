@@ -1,3 +1,4 @@
+//src/components/components 
 
 "use client";
 
@@ -74,15 +75,27 @@ export function LogExpenseForm() {
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: undefined,
-      category: undefined,
-      purchaseType: undefined,
+      amount: 0,
+      category: "" as any,
+      purchaseType: "" as any,  
     },
   });
 
   function onSubmit(values: z.infer<typeof expenseSchema>) {
+    // 🔍 ADD THIS BEFORE startTransition
+    console.log('=== FORM SUBMIT DEBUG ===');
+    console.log('Form values:', values);
+    console.log('Amount:', values.amount, 'Type:', typeof values.amount);
+    console.log('Category:', values.category);
+    console.log('Purchase Type:', values.purchaseType);
+    console.log('========================');
+  
     startTransition(async () => {
       const result = await logExpenseAction(values);
+      
+      /// 🔍 ADD THIS LINE:
+      console.log('--- DEBUG DATA FROM SERVER ---', result.debugData);
+      
       if (result.success) {
         toast({
           title: 'Success!',
@@ -99,6 +112,7 @@ export function LogExpenseForm() {
     });
   }
 
+  
   return (
     <Card>
       <CardHeader>
@@ -107,14 +121,27 @@ export function LogExpenseForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
+          <FormField
+  control={form.control}
+  name="amount"
+  render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-center block">Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="0.00" {...field} step="0.01" />
+                    <Input 
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Only allow numbers and decimal point
+                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                          field.onChange(value === '' ? '' : parseFloat(value));
+                        }
+                      }}
+                      value={field.value === 0 ? '' : field.value}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
