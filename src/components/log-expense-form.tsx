@@ -1,5 +1,4 @@
 //src/components/log-expenses-form.tsx 
-
 "use client";
 
 import React from 'react';
@@ -144,8 +143,8 @@ export function LogExpenseForm() {
                           field.onChange(value === '' ? undefined : parseFloat(value));
                         }
                       }}
-                      // Show an empty string if the value is undefined (or 0)
-                      // `??` is nullish coalescing, it's safer than `||`
+                      // Show an empty string if the value is undefined
+                      // This logic is correct.
                       value={field.value ?? ''}
                     />
                   </FormControl>
@@ -159,7 +158,8 @@ export function LogExpenseForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-center block">Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  {/* FIX: Use `value || ''` to correctly show the placeholder after reset */}
+                  <Select onValueChange={field.onChange} value={field.value || ''}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -192,7 +192,8 @@ export function LogExpenseForm() {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      value={field.value}
+                      // FIX: Use `value || ''` to correctly reset the selection
+                      value={field.value || ''}
                       className="grid grid-cols-3 gap-4 pt-2"
                     >
                       {expensePurchaseTypes.map((purchaseType) => {
