@@ -75,7 +75,7 @@ export function LogExpenseForm() {
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: 0,
+      amount: undefined,
       category: undefined,
       purchaseType: undefined,  
     },
@@ -122,25 +122,31 @@ export function LogExpenseForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
-  control={form.control}
-  name="amount"
-  render={({ field }) => (
-                <FormItem>
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+                  <FormItem>
                   <FormLabel className="text-center block">Amount</FormLabel>
                   <FormControl>
                     <Input 
                       type="text"
                       inputMode="decimal"
                       placeholder="0.00"
+                      // Pass all field props...
                       {...field}
+                      // ...but override onChange and value
                       onChange={(e) => {
                         const value = e.target.value;
-                        // Only allow numbers and decimal point
+                        // Only allow valid number-like strings
                         if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          field.onChange(value === '' ? '' : parseFloat(value));
+                          // If the string is empty, pass `undefined`
+                          // Otherwise, pass the number
+                          field.onChange(value === '' ? undefined : parseFloat(value));
                         }
                       }}
-                      value={field.value === 0 ? '' : field.value}
+                      // Show an empty string if the value is undefined (or 0)
+                      // `??` is nullish coalescing, it's safer than `||`
+                      value={field.value ?? ''}
                     />
                   </FormControl>
                   <FormMessage />
