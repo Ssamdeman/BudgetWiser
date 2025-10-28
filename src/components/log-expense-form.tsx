@@ -1,4 +1,4 @@
-//src/components/components 
+//src/components/log-expenses-form.tsx 
 
 "use client";
 
@@ -76,8 +76,8 @@ export function LogExpenseForm() {
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: 0,
-      category: "" as any,
-      purchaseType: "" as any,  
+      category: undefined,
+      purchaseType: undefined,  
     },
   });
 
