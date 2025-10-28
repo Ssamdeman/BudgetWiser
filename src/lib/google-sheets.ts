@@ -1,7 +1,6 @@
 //src/lib/google-sheets.ts
 import { google } from 'googleapis';
-// ❌ We no longer need the 'Expense' type here
-import { Expense } from './types'; 
+
 
 // Initialize Google Sheets client
 async function getGoogleSheetsClient() {
