@@ -153,7 +153,7 @@ export function LogExpenseForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-center block">Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -186,7 +186,7 @@ export function LogExpenseForm() {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="grid grid-cols-3 gap-4 pt-2"
                     >
                       {expensePurchaseTypes.map((purchaseType) => {
