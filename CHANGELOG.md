@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-12-04
+
+### Fixed
+
+- **Mobile**: Fixed an issue where the decimal point could not be entered in the Amount field.
+- **Mobile**: Fixed the Category dropdown opening upwards and overlapping with the keyboard; it now opens downwards and closes the keyboard automatically.
+
 ## [0.1.1] - 2025-12-04
 
 ### Fixed

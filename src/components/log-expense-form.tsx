@@ -115,7 +115,7 @@ export function LogExpenseForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Log New Expense</CardTitle>
+        <CardTitle className="text-center text-3xl font-bold tracking-tight">Log New Expense</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -203,8 +203,8 @@ export function LogExpenseForm() {
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors w-full',
-                                field.value === purchaseType ? 'border-accent' : ''
+                                'flex flex-col items-center justify-center rounded-xl border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-all duration-200 w-full active:scale-95 shadow-sm',
+                                field.value === purchaseType ? 'border-primary ring-1 ring-primary bg-accent/50 text-accent-foreground' : ''
                               )}
                             >
                               <Icon className="h-8 w-8 mb-2" />
