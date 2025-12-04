@@ -3,14 +3,14 @@ import { z } from "zod";
 
 export const expenseCategories = [
   "Cooking/Groceries",
-  "Eating Out", 
+  "Eating Out",
   "Transportation",
   "Projects",
   "Utilities",
   "Beauty/Grooming",
   "Clothing",
   "Travel/Adventure",
-  "Other"
+  "Other",
 ] as const;
 
 export const expensePurchaseTypes = [
@@ -19,11 +19,11 @@ export const expensePurchaseTypes = [
   "Social",
   "Necessary",
   "Treat",
-  "Family"
+  "Family",
 ] as const;
 
 export const expenseSchema = z.object({
-  amount: z
+  amount: z.coerce
     .number({ invalid_type_error: "Please enter a valid amount." })
     .positive("Amount must be positive.")
     .min(0.01, "Amount must be at least $0.01"),

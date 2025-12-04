@@ -120,7 +120,7 @@ export function LogExpenseForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
+            <FormField
             control={form.control}
             name="amount"
             render={({ field }) => (
@@ -128,23 +128,11 @@ export function LogExpenseForm() {
                   <FormLabel className="text-center block">Amount</FormLabel>
                   <FormControl>
                     <Input 
-                      type="text"
+                      type="number"
                       inputMode="decimal"
+                      step="0.01"
                       placeholder="0.00"
-                      // Pass all field props...
                       {...field}
-                      // ...but override onChange and value
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Only allow valid number-like strings
-                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          // If the string is empty, pass `undefined`
-                          // Otherwise, pass the number
-                          field.onChange(value === '' ? undefined : parseFloat(value));
-                        }
-                      }}
-                      // Show an empty string if the value is undefined
-                      // This logic is correct.
                       value={field.value ?? ''}
                     />
                   </FormControl>
@@ -158,14 +146,24 @@ export function LogExpenseForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-center block">Category</FormLabel>
-                  {/* FIX: Use `value || ''` to correctly show the placeholder after reset */}
-                  <Select onValueChange={field.onChange} value={field.value || ''}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || ''}
+                  >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger 
+                        onPointerDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          // Blur active element to close keyboard on mobile
+                          if (document.activeElement instanceof HTMLElement) {
+                            document.activeElement.blur();
+                          }
+                        }}
+                      >
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent position="popper" side="bottom">
                       {expenseCategories.map((category) => {
                         const Icon = categoryIcons[category];
                         return (
