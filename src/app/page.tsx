@@ -1,3 +1,5 @@
+"use client";
+
 import { LogExpenseForm } from '@/components/log-expense-form';
 import { AnalysisView } from '@/components/analysis-view';
 import { SwipeableTabs } from '@/components/swipeable-tabs';

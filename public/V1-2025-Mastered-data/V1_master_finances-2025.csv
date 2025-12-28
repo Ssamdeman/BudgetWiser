@@ -1,0 +1,315 @@
+Month,Date,Amount,Category
+Sep 2025,2025-09-01,6.64,Cooking/Groceries
+Sep 2025,2025-09-01,4,Cooking/Groceries
+Sep 2025,2025-09-01,3.37,Cooking/Groceries
+Sep 2025,2025-09-01,12.57,Cooking/Groceries
+Sep 2025,2025-09-02,3.45,Cooking/Groceries
+Sep 2025,2025-09-02,5.86,Cooking/Groceries
+Sep 2025,2025-09-02,20,Transportation
+Sep 2025,2025-09-03,4.36,Cooking/Groceries
+Sep 2025,2025-09-05,4,Cooking/Groceries
+Sep 2025,2025-09-05,5,Transportation
+Sep 2025,2025-09-05,5,Transportation
+Sep 2025,2025-09-05,5,Cooking/Groceries
+Sep 2025,2025-09-05,9.99,Projects
+Sep 2025,2025-09-05,32,Projects
+Sep 2025,2025-09-05,2.13,Cooking/Groceries
+Sep 2025,2025-09-05,21,Travel/Adventure
+Sep 2025,2025-09-06,20,Projects
+Sep 2025,2025-09-06,40,Cooking/Groceries
+Sep 2025,2025-09-08,70,Travel/Adventure
+Sep 2025,2025-09-09,4,Cooking/Groceries
+Sep 2025,2025-09-09,17,Projects
+Sep 2025,2025-09-09,7,Cooking/Groceries
+Sep 2025,2025-09-11,6,Cooking/Groceries
+Sep 2025,2025-09-11,21,Cooking/Groceries
+Sep 2025,2025-09-12,8,Cooking/Groceries
+Sep 2025,2025-09-13,29.9,Cooking/Groceries
+Sep 2025,2025-09-15,15,Transportation
+Sep 2025,2025-09-15,3.9,Cooking/Groceries
+Sep 2025,2025-09-18,20,Cooking/Groceries
+Sep 2025,2025-09-18,3.39,Cooking/Groceries
+Sep 2025,2025-09-18,20,Cooking/Groceries
+Sep 2025,2025-09-19,8,Cooking/Groceries
+Sep 2025,2025-09-19,17,Transportation
+Sep 2025,2025-09-22,30,Cooking/Groceries
+Sep 2025,2025-09-22,70,Cooking/Groceries
+Oct 2025,2025-10-03,45,Cooking/Groceries
+Oct 2025,2025-10-03,11.48,Cooking/Groceries
+Oct 2025,2025-10-03,3.7,Cooking/Groceries
+Oct 2025,2025-10-03,7,Cooking/Groceries
+Oct 2025,2025-10-05,30,Cooking/Groceries
+Oct 2025,2025-10-05,13,Cooking/Groceries
+Oct 2025,2025-10-05,19,Cooking/Groceries
+Oct 2025,2025-10-05,6.38,Cooking/Groceries
+Oct 2025,2025-10-05,10,Other
+Oct 2025,2025-10-06,15,Utilities
+Oct 2025,2025-10-06,5.1,Cooking/Groceries
+Oct 2025,2025-10-06,7,Cooking/Groceries
+Oct 2025,2025-10-08,4,Cooking/Groceries
+Oct 2025,2025-10-09,8.82,Cooking/Groceries
+Oct 2025,2025-10-12,22,Transportation
+Oct 2025,2025-10-17,100,Cooking/Groceries
+Oct 2025,2025-10-17,21,Cooking/Groceries
+Oct 2025,2025-10-17,20,Transportation
+Oct 2025,2025-10-17,6,Cooking/Groceries
+Oct 2025,2025-10-17,13.5,Cooking/Groceries
+May 2025,2025-05-01,20,Projects
+May 2025,2025-05-02,7.58,Cooking/Groceries
+May 2025,2025-05-05,7.48,Cooking/Groceries
+May 2025,2025-05-05,57.38,Cooking/Groceries
+May 2025,2025-05-05,5.97,Personal
+May 2025,2025-05-06,21.25,Projects
+May 2025,2025-05-07,3.79,Cooking/Groceries
+May 2025,2025-05-07,3.89,Cooking/Groceries
+May 2025,2025-05-09,12.55,Transportation
+May 2025,2025-05-09,7.78,Cooking/Groceries
+May 2025,2025-05-09,3.89,Cooking/Groceries
+May 2025,2025-05-10,27.97,Transportation
+May 2025,2025-05-11,90,Cooking/Groceries
+May 2025,2025-05-11,17.93,Cooking/Groceries
+May 2025,2025-05-11,3.49,Cooking/Groceries
+May 2025,2025-05-13,5.39,Cooking/Groceries
+May 2025,2025-05-14,24.42,Cooking/Groceries
+May 2025,2025-05-17,3.8,Cooking/Groceries
+May 2025,2025-05-17,2.99,Cooking/Groceries
+May 2025,2025-05-17,21.35,Transportation
+May 2025,2025-05-17,8.5,Cooking/Groceries
+May 2025,2025-05-17,12.91,Cooking/Groceries
+May 2025,2025-05-17,180,Other
+May 2025,2025-05-20,15,Cooking/Groceries
+May 2025,2025-05-20,15,Cooking/Groceries
+May 2025,2025-05-21,3.89,Cooking/Groceries
+May 2025,2025-05-22,18.08,Transportation
+May 2025,2025-05-22,2.3,Cooking/Groceries
+May 2025,2025-05-24,19.35,Cooking/Groceries
+May 2025,2025-05-24,11.8,Cooking/Groceries
+May 2025,2025-05-24,5.44,Cooking/Groceries
+May 2025,2025-05-25,36.85,Cooking/Groceries
+May 2025,2025-05-28,15,Cooking/Groceries
+May 2025,2025-05-29,15,Cooking/Groceries
+May 2025,2025-05-29,6,Cooking/Groceries
+May 2025,2025-05-30,36,Cooking/Groceries
+May 2025,2025-05-30,2,Cooking/Groceries
+May 2025,2025-05-31,22,Cooking/Groceries
+May 2025,2025-05-31,3,Cooking/Groceries
+Jun 2025,2025-06-02,3.46,Cooking/Groceries
+Jun 2025,2025-06-02,15,Transportation
+Jun 2025,2025-06-03,70,Projects
+Jun 2025,2025-06-04,3.58,Cooking/Groceries
+Jun 2025,2025-06-04,83,Transportation
+Jun 2025,2025-06-06,6.38,Cooking/Groceries
+Jun 2025,2025-06-06,21.73,Projects
+Jun 2025,2025-06-06,15.03,Transportation
+Jun 2025,2025-06-06,5.1,Cooking/Groceries
+Jun 2025,2025-06-06,25.69,Transportation
+Jun 2025,2025-06-06,54.63,Projects
+Jun 2025,2025-06-06,48.96,Projects
+Jun 2025,2025-06-06,21,Cooking/Groceries
+Jun 2025,2025-06-06,15,Transportation
+Jun 2025,2025-06-07,12.47,Cooking/Groceries
+Jun 2025,2025-06-08,17,Cooking/Groceries
+Jun 2025,2025-06-08,28.18,Cooking/Groceries
+Jun 2025,2025-06-08,12,Utilities
+Jun 2025,2025-06-09,37.35,Cooking/Groceries
+Jun 2025,2025-06-09,22,Cooking/Groceries
+Jun 2025,2025-06-09,20,Cooking/Groceries
+Jun 2025,2025-06-10,5.34,Cooking/Groceries
+Jun 2025,2025-06-10,11.31,Cooking/Groceries
+Jun 2025,2025-06-10,2.39,Cooking/Groceries
+Jun 2025,2025-06-10,21.4,Projects
+Jun 2025,2025-06-14,4,Cooking/Groceries
+Jun 2025,2025-06-14,10,Transportation
+Jun 2025,2025-06-14,4.58,Personal
+Jun 2025,2025-06-14,11.88,Cooking/Groceries
+Jun 2025,2025-06-14,9.63,Cooking/Groceries
+Jun 2025,2025-06-14,23.54,Cooking/Groceries
+Jun 2025,2025-06-14,10,Cooking/Groceries
+Jun 2025,2025-06-14,13.97,Cooking/Groceries
+Jun 2025,2025-06-14,27.94,Cooking/Groceries
+Jun 2025,2025-06-14,3.69,Cooking/Groceries
+Jun 2025,2025-06-16,50.63,Cooking/Groceries
+Jun 2025,2025-06-16,2.38,Cooking/Groceries
+Jun 2025,2025-06-16,11,Cooking/Groceries
+Jun 2025,2025-06-16,2.9,Cooking/Groceries
+Jun 2025,2025-06-17,3.69,Cooking/Groceries
+Jun 2025,2025-06-17,6.75,Cooking/Groceries
+Jun 2025,2025-06-19,80,Personal
+Jun 2025,2025-06-19,20,Cooking/Groceries
+Jun 2025,2025-06-19,10,Utilities
+Jun 2025,2025-06-19,15,Personal
+Jun 2025,2025-06-19,36,Projects
+Jun 2025,2025-06-19,40,Personal
+Jun 2025,2025-06-22,40,Projects
+Apr 2025,2025-04-02,15,Cooking/Groceries
+Apr 2025,2025-04-02,3.58,Cooking/Groceries
+Apr 2025,2025-04-03,16.45,Projects
+Apr 2025,2025-04-06,36.73,Cooking/Groceries
+Apr 2025,2025-04-07,2.84,Cooking/Groceries
+Apr 2025,2025-04-07,8.49,Personal
+Apr 2025,2025-04-09,86.93,Projects
+Apr 2025,2025-04-09,2.41,Cooking/Groceries
+Apr 2025,2025-04-09,10,Utilities
+Apr 2025,2025-04-10,51.73,Other
+Apr 2025,2025-04-11,2.37,Cooking/Groceries
+Apr 2025,2025-04-13,20.21,Cooking/Groceries
+Apr 2025,2025-04-13,4.18,Cooking/Groceries
+Apr 2025,2025-04-14,17.53,Cooking/Groceries
+Apr 2025,2025-04-15,31.68,Transportation
+Apr 2025,2025-04-15,7.58,Cooking/Groceries
+Apr 2025,2025-04-15,7.38,Cooking/Groceries
+Apr 2025,2025-04-19,20,Cooking/Groceries
+Apr 2025,2025-04-19,5,Cooking/Groceries
+Apr 2025,2025-04-21,20,Cooking/Groceries
+Apr 2025,2025-04-21,20,Cooking/Groceries
+Apr 2025,2025-04-22,2.3,Cooking/Groceries
+Apr 2025,2025-04-23,26.32,Transportation
+Apr 2025,2025-04-26,10.38,Cooking/Groceries
+Apr 2025,2025-04-26,3.44,Cooking/Groceries
+Apr 2025,2025-04-27,16.93,Cooking/Groceries
+Apr 2025,2025-04-27,12.43,Cooking/Groceries
+Apr 2025,2025-04-27,8.3,Cooking/Groceries
+Apr 2025,2025-04-30,9.75,Cooking/Groceries
+Apr 2025,2025-04-30,4.78,Cooking/Groceries
+Mar 2025,,48.55,Eating Out
+Mar 2025,,22.33,Travel/Adventure
+Mar 2025,,25,Travel/Adventure
+Mar 2025,,20,Personal
+Mar 2025,,23.44,Transportation
+Mar 2025,,22.33,Cooking/Groceries
+Mar 2025,,6.41,Cooking/Groceries
+Mar 2025,,9.15,Cooking/Groceries
+Mar 2025,,12.49,Cooking/Groceries
+Mar 2025,,6.12,Cooking/Groceries
+Mar 2025,,20,Cooking/Groceries
+Mar 2025,,32.8,Cooking/Groceries
+Mar 2025,,28.28,Cooking/Groceries
+Mar 2025,,45.63,Projects
+Mar 2025,,17.46,Cooking/Groceries
+Mar 2025,,27.67,Cooking/Groceries
+Mar 2025,,29.9,Personal-High Falls Gorge
+Mar 2025,,10.69,Personal-High Falls Gorge
+Mar 2025,,31.97,Personal-High Falls Gorge
+Mar 2025,,17.68,Personal-High Falls Gorge
+Mar 2025,,28.64,Personal-High Falls Gorge
+Mar 2025,,8.63,Cooking/Groceries
+Mar 2025,,3.83,Cooking/Groceries
+Mar 2025,,3.22,Cooking/Groceries
+Mar 2025,,8.27,Cooking/Groceries
+Mar 2025,,9.27,Cooking/Groceries
+Mar 2025,,8.05,Cooking/Groceries
+Mar 2025,,5.15,Cooking/Groceries
+Mar 2025,,3.26,Cooking/Groceries
+Mar 2025,,17.95,Cooking/Groceries
+Mar 2025,,10.61,Cooking/Groceries
+Mar 2025,,1.35,Transportation
+Mar 2025,,2.85,Transportation
+Mar 2025,,13.5,Cooking/Groceries
+Mar 2025,,14.56,Cooking/Groceries
+Mar 2025,,3.4,Cooking/Groceries
+Mar 2025,,27.44,Projects
+Mar 2025,,18.4,Cooking/Groceries
+Mar 2025,,30,Transportation
+Mar 2025,,22.49,Projects
+Nov 2025,2025-11-01,9,Eating Out
+Nov 2025,2025-11-01,28,Cooking/Groceries
+Nov 2025,2025-11-01,6,Eating Out
+Nov 2025,2025-11-01,8,Eating Out
+Nov 2025,2025-11-02,3,Eating Out
+Nov 2025,2025-11-02,24,Transportation
+Nov 2025,2025-11-02,18,Cooking/Groceries
+Nov 2025,2025-11-04,5,Eating Out
+Nov 2025,2025-11-05,11,Eating Out
+Nov 2025,2025-11-06,5,Eating Out
+Nov 2025,2025-11-06,8,Eating Out
+Nov 2025,2025-11-06,61,Clothing
+Nov 2025,2025-11-07,5,Eating Out
+Nov 2025,2025-11-07,10,Eating Out
+Nov 2025,2025-11-07,10,Eating Out
+Nov 2025,2025-11-07,28,Eating Out
+Nov 2025,2025-11-07,25,Transportation
+Nov 2025,2025-11-08,11,Eating Out
+Nov 2025,2025-11-08,37,Eating Out
+Nov 2025,2025-11-09,6,Eating Out
+Nov 2025,2025-11-09,4,Eating Out
+Nov 2025,2025-11-09,6,Eating Out
+Nov 2025,2025-11-09,26,Transportation
+Nov 2025,2025-11-09,9,Cooking/Groceries
+Nov 2025,2025-11-09,57,Cooking/Groceries
+Nov 2025,2025-11-10,25,Eating Out
+Nov 2025,2025-11-10,4,Eating Out
+Nov 2025,2025-11-11,5,Eating Out
+Nov 2025,2025-11-13,48,Eating Out
+Nov 2025,2025-11-13,5,Eating Out
+Nov 2025,2025-11-16,5,Eating Out
+Nov 2025,2025-11-19,20,Transportation
+Nov 2025,2025-11-19,14,Eating Out
+Nov 2025,2025-11-20,9,Eating Out
+Nov 2025,2025-11-20,5,Eating Out
+Nov 2025,2025-11-20,100,Projects
+Nov 2025,2025-11-21,15,Cooking/Groceries
+Nov 2025,2025-11-21,6,Eating Out
+Nov 2025,2025-11-21,9,Eating Out
+Nov 2025,2025-11-22,32,Transportation
+Nov 2025,2025-11-22,6,Eating Out
+Nov 2025,2025-11-22,7,Eating Out
+Nov 2025,2025-11-22,7,Eating Out
+Nov 2025,2025-11-23,17,Eating Out
+Nov 2025,2025-11-26,10,Clothing
+Nov 2025,2025-11-26,93,Clothing
+Nov 2025,2025-11-26,53,Eating Out
+Nov 2025,2025-11-26,16,Transportation
+Nov 2025,2025-11-26,21,Transportation
+Nov 2025,2025-11-26,9,Eating Out
+Nov 2025,2025-11-27,7,Eating Out
+Nov 2025,2025-11-28,4,Eating Out
+Nov 2025,2025-11-28,8,Eating Out
+Dec 2025,2025-12-04,20.89,Transportation
+Dec 2025,2025-12-04,2.55,Eating Out
+Dec 2025,2025-12-04,7.43,Eating Out
+Dec 2025,2025-12-04,10.15,Eating Out
+Dec 2025,2025-12-04,2.55,EAting Out
+Dec 2025,2025-12-04,4.24,Transportation
+Dec 2025,2025-12-04,10.00,Utilities
+Dec 2025,2025-12-04,40.00,Beauty/Grooming
+Dec 2025,2025-12-04,5.00,Eating Out
+Dec 2025,2025-12-04,11.00,Cooking/Groceries
+Dec 2025,2025-12-05,2.15,Eating Out
+Dec 2025,2025-12-05,16.00,Clothing
+Dec 2025,2025-12-05,11.00,Transportation
+Dec 2025,2025-12-05,45.00,Eating Out
+Dec 2025,2025-12-06,7.72,Eating Out
+Dec 2025,2025-12-06,16.30,Transportation
+Dec 2025,2025-12-07,3.00,Eating Out
+Dec 2025,2025-12-07,6.63,Eating Out
+Dec 2025,2025-12-08,10.30,Eating Out
+Dec 2025,2025-12-08,3.00,Eating Out
+Dec 2025,2025-12-09,11.00,Eating Out
+Dec 2025,2025-12-09,6.30,Eating Out
+Dec 2025,2025-12-09,21.70,Cooking/Groceries
+Dec 2025,2025-12-10,80.00,Projects
+Dec 2025,2025-12-12,33.00,Cooking/Groceries
+Dec 2025,2025-12-12,15.00,Beauty/Grooming
+Dec 2025,2025-12-12,3.00,Eating Out
+Dec 2025,2025-12-12,8.88,Eating Out
+Dec 2025,2025-12-12,3.60,Eating Out
+Dec 2025,2025-12-14,3.69,Eating Out
+Dec 2025,2025-12-14,42.00,Cooking/Groceries
+Dec 2025,2025-12-15,3.69,Eating Out
+Dec 2025,2025-12-15,105.93,Clothing
+Dec 2025,2025-12-15,35.00,Transportation
+Dec 2025,2025-12-17,5.10,Eating Out
+Dec 2025,2025-12-18,6.43,Eating Out
+Dec 2025,2025-12-18,30.50,Eating Out
+Dec 2025,2025-12-18,5.00,Projects
+Dec 2025,2025-12-19,45.00,Cooking/Groceries
+Dec 2025,2025-12-20,30.00,Eating Out
+Dec 2025,2025-12-20,5.00,Projects
+Dec 2025,2025-12-20,40.00,Travel/Adventure
+Dec 2025,2025-12-20,6.63,Eating Out
+Dec 2025,2025-12-22,3.60,Eating Out
+Dec 2025,2025-12-24,2.85,Eating Out
+Dec 2025,2025-12-24,8.30,Eating Out
+Dec 2025,2025-12-25,2.89,Eating Out
+Dec 2025,2025-12-26,28.12,Transportation
+Dec 2025,2025-12-26,2.19,Eating Out
