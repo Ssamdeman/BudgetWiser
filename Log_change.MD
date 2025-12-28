@@ -13,4 +13,26 @@ Upgraded to Next.js 16.1.1 + React 19.2.3
 Fixed duplicate key warning in chart tooltip
 Remaining console warning (hydration mismatch) is caused by a browser extension, not our code. Can be ignored or tested in incognito mode.
 
-Refresh the page to see the duplicate key warning is gone!
+---
+
+Design Polish Complete. ✨
+
+Category by Month Chart:
+
+Tooltip now hides zero categories
+Sorted by spending (highest first)
+Shows month total at top
+Month-over-Month Chart:
+
+Clear comparison: shows "Mar → Apr" in tooltip
+Previous and current amounts displayed
+Dashed zero reference line for context
+Overall Elevation:
+
+Hero card with gradient glow effect
+Glassmorphism tooltips with backdrop blur
+Icon badges for each section
+Gradient fill on bars
+Premium typography with tabular numbers
+Custom loading spinner
+Hover states on cards

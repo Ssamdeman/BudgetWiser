@@ -23,8 +23,26 @@ export interface AnalyticsData {
   entries: ExpenseEntry[];
   monthlyTotals: MonthlyTotal[];
   categoryTotals: CategoryTotal[];
+  categoryByMonth: CategoryByMonth[];
+  monthlyChanges: MonthlyChange[];
+  allCategories: string[];
   grandTotal: number;
   monthCount: number;
+}
+
+// For stacked bar chart - each month has dynamic category keys
+export interface CategoryByMonth {
+  month: string;
+  [category: string]: number | string;
+}
+
+// For month-over-month % change chart
+export interface MonthlyChange {
+  month: string;
+  previousMonth: string;
+  previousTotal: number;
+  currentTotal: number;
+  percentChange: number;
 }
 
 // Month order for proper sorting
@@ -131,6 +149,68 @@ function aggregateByCategory(entries: ExpenseEntry[]): CategoryTotal[] {
 }
 
 /**
+ * Aggregates entries by month with category breakdown for stacked chart
+ */
+function aggregateCategoryByMonth(entries: ExpenseEntry[], categories: string[]): CategoryByMonth[] {
+  // Group by month first
+  const monthData = new Map<string, Map<string, number>>();
+  
+  entries.forEach(entry => {
+    const shortMonth = entry.month.split(' ')[0];
+    if (!monthData.has(shortMonth)) {
+      monthData.set(shortMonth, new Map());
+    }
+    const categoryMap = monthData.get(shortMonth)!;
+    const current = categoryMap.get(entry.category) || 0;
+    categoryMap.set(entry.category, current + entry.amount);
+  });
+  
+  // Convert to array, sorted by MONTH_ORDER, only months with data
+  return MONTH_ORDER
+    .filter(month => monthData.has(month))
+    .map(month => {
+      const categoryMap = monthData.get(month)!;
+      const result: CategoryByMonth = { month };
+      
+      categories.forEach(category => {
+        result[category] = Math.round((categoryMap.get(category) || 0) * 100) / 100;
+      });
+      
+      return result;
+    });
+}
+
+/**
+ * Calculates month-over-month percentage changes
+ */
+function calculateMonthOverMonth(monthlyTotals: MonthlyTotal[]): MonthlyChange[] {
+  const changes: MonthlyChange[] = [];
+  
+  // Filter to only months with data
+  const monthsWithData = monthlyTotals.filter(m => m.total > 0);
+  
+  // Skip first month (no previous to compare)
+  for (let i = 1; i < monthsWithData.length; i++) {
+    const previous = monthsWithData[i - 1];
+    const current = monthsWithData[i];
+    
+    const percentChange = previous.total > 0
+      ? Math.round(((current.total - previous.total) / previous.total) * 1000) / 10
+      : 0;
+    
+    changes.push({
+      month: current.month,
+      previousMonth: previous.month,
+      previousTotal: previous.total,
+      currentTotal: current.total,
+      percentChange,
+    });
+  }
+  
+  return changes;
+}
+
+/**
  * Fetches and parses the master CSV file
  */
 export async function fetchAndParseCSV(): Promise<AnalyticsData> {
@@ -141,6 +221,13 @@ export async function fetchAndParseCSV(): Promise<AnalyticsData> {
   const monthlyTotals = aggregateByMonth(entries);
   const categoryTotals = aggregateByCategory(entries);
   
+  // Get all unique categories
+  const allCategories = [...new Set(entries.map(e => e.category))].sort();
+  
+  // Calculate new aggregations
+  const categoryByMonth = aggregateCategoryByMonth(entries, allCategories);
+  const monthlyChanges = calculateMonthOverMonth(monthlyTotals);
+  
   // Calculate grand total and count of months with data
   const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
   const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
@@ -149,6 +236,9 @@ export async function fetchAndParseCSV(): Promise<AnalyticsData> {
     entries,
     monthlyTotals,
     categoryTotals,
+    categoryByMonth,
+    monthlyChanges,
+    allCategories,
     grandTotal: Math.round(grandTotal * 100) / 100,
     monthCount: monthsWithData.size,
   };
