@@ -36,3 +36,47 @@ Gradient fill on bars
 Premium typography with tabular numbers
 Custom loading spinner
 Hover states on cards
+
+✅ Implementation Complete
+Dashboard Toggles + V2 Charts shipped successfully.
+
+What I Built:
+4 new chart components: Monthly Mood (stacked), Mood Analysis (horizontal bar), Spending Heatmap (grid), Day & Time Bars (dual charts)
+V2 Parser: No-cache fetch strategy for live updates
+Analysis View: Accordion with V2 first (expanded) + V1 second (collapsed)
+Hero Section: Total Spent, Top Mood, Peak Spending Time
+
+Subscriptions Tab — Walkthrough
+Third swipeable tab for subscription tracking with summary stats and status-grouped cards.
+
+Changes Made
+File Action Purpose
+types.ts
+MODIFY Added
+Subscription
+,
+SubscriptionsData
+types
+subscription-parser.ts
+NEW CSV parser with no-cache + totals calculator
+subscriptions-view.tsx
+NEW Summary header + status-grouped cards
+page.tsx
+MODIFY Added third "Subs" tab
+UI Structure
+┌─────────────────────────────────────────┐
+│ Data │ Analysis │ Subs ← NEW │
+├─────────────────────────────────────────┤
+│ SUMMARY HEADER │
+│ $1,364/mo │ $16,418/yr │
+│ 8 Active • 3 Done • 1 Canceled │
+├─────────────────────────────────────────┤
+│ ▼ Active (8) │
+│ [Card] 11 Gorham Rent $1,300/mo │
+│ [Card] iCloud $2.99/mo │
+│ ... │
+│ ▶ Done (3) ─────────────── collapsed │
+│ ▶ Canceled (1) ─────────── collapsed │
+└─────────────────────────────────────────┘
+Build Status
+✅ Build passed

@@ -2,6 +2,7 @@
 
 import { LogExpenseForm } from '@/components/log-expense-form';
 import { AnalysisView } from '@/components/analysis-view';
+import { SubscriptionsView } from '@/components/subscriptions-view';
 import { SwipeableTabs } from '@/components/swipeable-tabs';
 
 export default function Home() {
@@ -13,6 +14,10 @@ export default function Home() {
     {
       name: 'Analysis',
       content: <AnalysisView />,
+    },
+    {
+      name: 'Subs',
+      content: <SubscriptionsView />,
     },
   ];
 

@@ -1,0 +1,14 @@
+Name,Status,Category,Cost,Cycle,BillDate,Bank,Notes
+11 Gorham Rent,Active,Housing,1300,Monthly-Start,1,Santander,Pay via check and not used for calculation
+iCloud,Active,Tools,2.99,Monthly-Start,1,Apple Card,Updated from $1.99 Nov 2025
+TriCare Reserve,Canceled,Health,53.80,Monthly-Start,5,Navy,
+Claude AI,Active,Work,21.55,Monthly-Start,5,Navy,
+YouTube Premium,Active,Entertainment,8.82,Monthly-Mid,13,Navy,
+iPhone 15,Done,Necessary,37.45,Monthly-End,30,Apple Card,
+Wifi 11 Gorham,Active,Housing,19,Monthly-Mid,14,Navy,
+Pearson+,Done,School,9.99,Monthly-Start,5,,TEMP - school only
+Google AI Pro 2TB,Active,Work,0,Yearly,,Navy,Free until 2026-08-08 - CANCEL
+Notion AI,Active,Work,50,Yearly,7,Navy,50% off - worth it
+Perplexity Pro,Active,Work,0,Yearly,,,Free until 2026-09-16
+TriCare Dental,Active,Health,12.36,Monthly-Start,,Navy,Needs attention
+Walmart+,Done,Shopping,0,Monthly-Start,,,Not much detail

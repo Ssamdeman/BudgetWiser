@@ -106,3 +106,39 @@ export interface V2AnalyticsData {
   topMood: { mood: Mood; percentage: number } | null;
   peakSpendingTime: { day: DayOfWeek; timeOfDay: TimeOfDay; total: number } | null;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Subscription Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const subscriptionStatuses = ["Active", "Canceled", "Done"] as const;
+export type SubscriptionStatus = typeof subscriptionStatuses[number];
+
+export const subscriptionCycles = ["Monthly-Start", "Monthly-Mid", "Monthly-End", "Yearly"] as const;
+export type SubscriptionCycle = typeof subscriptionCycles[number];
+
+export const bankAccounts = ["Navy", "Apple Card", "Santander", "Capital One"] as const;
+export type BankAccount = typeof bankAccounts[number];
+
+export interface Subscription {
+  name: string;
+  status: SubscriptionStatus;
+  category: string;
+  cost: number;
+  cycle: SubscriptionCycle;
+  billDate?: number;
+  bank?: BankAccount;
+  notes?: string;
+}
+
+export interface SubscriptionsData {
+  subscriptions: Subscription[];
+  monthlyTotal: number;      // Sum of Active monthly costs
+  yearlyTotal: number;       // (monthlyTotal × 12) + yearly costs
+  counts: {
+    active: number;
+    canceled: number;
+    done: number;
+  };
+}
+
