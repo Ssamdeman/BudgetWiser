@@ -243,3 +243,247 @@ export async function fetchAndParseCSV(): Promise<AnalyticsData> {
     monthCount: monthsWithData.size,
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// V2 PARSER (2026+ Data with Mood, TimeOfDay, DayOfWeek)
+// ═══════════════════════════════════════════════════════════════════════════
+
+import type { 
+  V2ExpenseEntry, 
+  V2AnalyticsData, 
+  MoodTotal, 
+  MoodByMonth, 
+  DayTotal, 
+  TimeOfDayTotal, 
+  DayTimeHeatmapCell,
+  Mood,
+  TimeOfDay,
+  DayOfWeek
+} from './types';
+import { expensePurchaseTypes, timeOfDayOptions, daysOfWeek } from './types';
+
+/**
+ * Parses V2 CSV format: Month,Date,Amount,Category,Mood,TimeOfDay,DayOfWeek,WeekNumber
+ */
+function parseV2CSV(csvText: string): V2ExpenseEntry[] {
+  const lines = csvText.split('\n').filter(line => line.trim());
+  const entries: V2ExpenseEntry[] = [];
+  
+  // Skip header row
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].replace('\r', '');
+    const parts = line.split(',');
+    
+    if (parts.length < 8) continue;
+    
+    const [month, date, amount, category, mood, timeOfDay, dayOfWeek, weekNumber] = parts;
+    
+    if (month && amount && category) {
+      entries.push({
+        month: month.trim(),
+        date: date?.trim() || '',
+        amount: parseFloat(amount),
+        category: normalizeCategory(category),
+        mood: (mood?.trim() || 'Planned') as Mood,
+        timeOfDay: (timeOfDay?.trim() || 'Afternoon') as TimeOfDay,
+        dayOfWeek: (dayOfWeek?.trim() || 'Monday') as DayOfWeek,
+        weekNumber: parseInt(weekNumber?.trim() || '1', 10),
+      });
+    }
+  }
+  
+  return entries;
+}
+
+/**
+ * Aggregates V2 entries by mood with percentages
+ */
+function aggregateByMood(entries: V2ExpenseEntry[]): MoodTotal[] {
+  const totals = new Map<string, number>();
+  let grandTotal = 0;
+  
+  entries.forEach(entry => {
+    const current = totals.get(entry.mood) || 0;
+    totals.set(entry.mood, current + entry.amount);
+    grandTotal += entry.amount;
+  });
+  
+  // Ensure all moods are represented
+  return (expensePurchaseTypes as readonly string[]).map(mood => {
+    const total = totals.get(mood) || 0;
+    return {
+      mood: mood as Mood,
+      total: Math.round(total * 100) / 100,
+      percentage: grandTotal > 0 ? Math.round((total / grandTotal) * 1000) / 10 : 0,
+    };
+  }).filter(m => m.total > 0).sort((a, b) => b.total - a.total);
+}
+
+/**
+ * Aggregates V2 entries by month with mood breakdown for stacked chart
+ */
+function aggregateMoodByMonth(entries: V2ExpenseEntry[]): MoodByMonth[] {
+  const monthData = new Map<string, Map<string, number>>();
+  
+  entries.forEach(entry => {
+    const shortMonth = entry.month.split(' ')[0];
+    if (!monthData.has(shortMonth)) {
+      monthData.set(shortMonth, new Map());
+    }
+    const moodMap = monthData.get(shortMonth)!;
+    const current = moodMap.get(entry.mood) || 0;
+    moodMap.set(entry.mood, current + entry.amount);
+  });
+  
+  // Return in calendar order, only months with data
+  return MONTH_ORDER
+    .filter(month => monthData.has(month))
+    .map(month => {
+      const moodMap = monthData.get(month)!;
+      const result: MoodByMonth = { month };
+      
+      (expensePurchaseTypes as readonly string[]).forEach(mood => {
+        result[mood] = Math.round((moodMap.get(mood) || 0) * 100) / 100;
+      });
+      
+      return result;
+    });
+}
+
+/**
+ * Aggregates V2 entries by day of week
+ */
+function aggregateByDayOfWeek(entries: V2ExpenseEntry[]): DayTotal[] {
+  const totals = new Map<string, number>();
+  
+  entries.forEach(entry => {
+    const current = totals.get(entry.dayOfWeek) || 0;
+    totals.set(entry.dayOfWeek, current + entry.amount);
+  });
+  
+  return (daysOfWeek as readonly string[]).map(day => ({
+    day: day as DayOfWeek,
+    total: Math.round((totals.get(day) || 0) * 100) / 100,
+  }));
+}
+
+/**
+ * Aggregates V2 entries by time of day
+ */
+function aggregateByTimeOfDay(entries: V2ExpenseEntry[]): TimeOfDayTotal[] {
+  const totals = new Map<string, number>();
+  
+  entries.forEach(entry => {
+    const current = totals.get(entry.timeOfDay) || 0;
+    totals.set(entry.timeOfDay, current + entry.amount);
+  });
+  
+  return (timeOfDayOptions as readonly string[]).map(time => ({
+    timeOfDay: time as TimeOfDay,
+    total: Math.round((totals.get(time) || 0) * 100) / 100,
+  }));
+}
+
+/**
+ * Creates heatmap data: Day × TimeOfDay grid with intensities
+ */
+function aggregateDayTimeHeatmap(entries: V2ExpenseEntry[]): DayTimeHeatmapCell[] {
+  const grid = new Map<string, number>();
+  let maxTotal = 0;
+  
+  // Build grid
+  entries.forEach(entry => {
+    const key = `${entry.dayOfWeek}-${entry.timeOfDay}`;
+    const current = grid.get(key) || 0;
+    const newTotal = current + entry.amount;
+    grid.set(key, newTotal);
+    maxTotal = Math.max(maxTotal, newTotal);
+  });
+  
+  // Create cells with normalized intensity
+  const cells: DayTimeHeatmapCell[] = [];
+  
+  (daysOfWeek as readonly string[]).forEach(day => {
+    (timeOfDayOptions as readonly string[]).forEach(time => {
+      const key = `${day}-${time}`;
+      const total = grid.get(key) || 0;
+      cells.push({
+        day: day as DayOfWeek,
+        timeOfDay: time as TimeOfDay,
+        total: Math.round(total * 100) / 100,
+        intensity: maxTotal > 0 ? total / maxTotal : 0,
+      });
+    });
+  });
+  
+  return cells;
+}
+
+/**
+ * Find peak spending cell (day + time combination)
+ */
+function findPeakSpending(heatmap: DayTimeHeatmapCell[]): { day: DayOfWeek; timeOfDay: TimeOfDay; total: number } | null {
+  if (heatmap.length === 0) return null;
+  
+  const peak = heatmap.reduce((max, cell) => cell.total > max.total ? cell : max, heatmap[0]);
+  return peak.total > 0 ? { day: peak.day, timeOfDay: peak.timeOfDay, total: peak.total } : null;
+}
+
+/**
+ * Fetches and parses V2 CSV file (no-cache for live updates)
+ */
+export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
+  try {
+    const response = await fetch('/V2_master_finances-2026.csv', {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
+    
+    if (!response.ok) return null;
+    
+    const csvText = await response.text();
+    if (!csvText.trim() || csvText.trim().split('\n').length < 2) return null;
+    
+    const entries = parseV2CSV(csvText);
+    if (entries.length === 0) return null;
+    
+    const moodTotals = aggregateByMood(entries);
+    const moodByMonth = aggregateMoodByMonth(entries);
+    const dayTotals = aggregateByDayOfWeek(entries);
+    const timeOfDayTotals = aggregateByTimeOfDay(entries);
+    const heatmapData = aggregateDayTimeHeatmap(entries);
+    
+    // Reuse existing aggregateByCategory for V2
+    const v2Entries = entries.map(e => ({
+      month: e.month,
+      date: e.date,
+      amount: e.amount,
+      category: e.category,
+    }));
+    const categoryTotals = aggregateByCategory(v2Entries);
+    
+    const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
+    const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
+    
+    // Hero insights
+    const topMood = moodTotals.length > 0 ? { mood: moodTotals[0].mood, percentage: moodTotals[0].percentage } : null;
+    const peakSpendingTime = findPeakSpending(heatmapData);
+    
+    return {
+      entries,
+      grandTotal: Math.round(grandTotal * 100) / 100,
+      monthCount: monthsWithData.size,
+      moodTotals,
+      moodByMonth,
+      dayTotals,
+      timeOfDayTotals,
+      heatmapData,
+      categoryTotals,
+      topMood,
+      peakSpendingTime,
+    };
+  } catch {
+    return null;
+  }
+}
+

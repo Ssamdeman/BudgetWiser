@@ -39,3 +39,50 @@ export const MOM_COLORS = {
   negative: 'hsl(0, 84%, 60%)',   // Red
   neutral: 'hsl(var(--muted-foreground))',
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// V2 Color Palettes
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Mood colors - distinct, vibrant, semantic
+export const MOOD_COLORS: Record<string, string> = {
+  Planned: 'hsl(210, 76%, 50%)',    // Blue - intentional
+  Impulse: 'hsl(340, 82%, 52%)',    // Rose - spontaneous
+  Social: 'hsl(262, 70%, 58%)',     // Purple - connection
+  Necessary: 'hsl(160, 60%, 42%)',  // Teal - essential
+  Treat: 'hsl(32, 95%, 55%)',       // Orange - reward
+  Family: 'hsl(280, 65%, 55%)',     // Violet - loved ones
+};
+
+// Day of week colors - warm → cool gradient through week
+export const DAY_COLORS: Record<string, string> = {
+  Monday: 'hsl(200, 70%, 50%)',
+  Tuesday: 'hsl(215, 70%, 55%)',
+  Wednesday: 'hsl(230, 65%, 55%)',
+  Thursday: 'hsl(250, 60%, 55%)',
+  Friday: 'hsl(270, 65%, 55%)',
+  Saturday: 'hsl(340, 70%, 55%)',
+  Sunday: 'hsl(25, 85%, 55%)',
+};
+
+// Time of day colors - light → dark
+export const TIME_COLORS: Record<string, string> = {
+  Morning: 'hsl(45, 90%, 55%)',     // Golden
+  Afternoon: 'hsl(25, 85%, 55%)',   // Orange
+  Evening: 'hsl(260, 60%, 50%)',    // Purple
+  Night: 'hsl(240, 50%, 35%)',      // Deep blue
+};
+
+// Heatmap intensity gradient (orange based)
+export const HEATMAP_BASE_HUE = 25; // Orange
+
+export function getHeatmapColor(intensity: number): string {
+  // intensity: 0-1
+  // low = light/transparent, high = saturated orange
+  const saturation = 20 + intensity * 70;  // 20% → 90%
+  const lightness = 90 - intensity * 45;   // 90% → 45%
+  const alpha = 0.2 + intensity * 0.8;     // 0.2 → 1
+  
+  return `hsla(${HEATMAP_BASE_HUE}, ${saturation}%, ${lightness}%, ${alpha})`;
+}
+
