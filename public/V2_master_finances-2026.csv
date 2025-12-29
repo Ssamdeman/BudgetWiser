@@ -1,0 +1,103 @@
+Month,Date,Amount,Category,Mood,TimeOfDay,DayOfWeek,WeekNumber
+Dec 2025,2025-12-04 09:00:09,20.89,Transportation,Necessary,Morning,Thursday,49
+Dec 2025,2025-12-04 09:49:13,2.55,Eating Out,Impulse,Morning,Thursday,49
+Dec 2025,2025-12-04 09:50:17,7.43,Eating Out,Impulse,Morning,Thursday,49
+Dec 2025,2025-12-04 09:50:27,10.15,Eating Out,Necessary,Morning,Thursday,49
+Dec 2025,2025-12-04 09:50:43,2.55,Eating Out,Impulse,Morning,Thursday,49
+Dec 2025,2025-12-04 09:50:52,4.24,Transportation,Necessary,Morning,Thursday,49
+Dec 2025,2025-12-04 09:51:04,10.0,Utilities,Necessary,Morning,Thursday,49
+Dec 2025,2025-12-04 20:03:24,40.0,Beauty/Grooming,Necessary,Evening,Thursday,49
+Dec 2025,2025-12-04 20:12:42,5.0,Eating Out,Impulse,Evening,Thursday,49
+Dec 2025,2025-12-04 20:12:54,11.0,Cooking/Groceries,Necessary,Evening,Thursday,49
+Dec 2025,2025-12-05 12:38:43,2.15,Eating Out,Necessary,Afternoon,Friday,49
+Dec 2025,2025-12-05 16:41:23,16.0,Clothing,Necessary,Afternoon,Friday,49
+Dec 2025,2025-12-05 16:41:32,11.0,Transportation,Necessary,Afternoon,Friday,49
+Dec 2025,2025-12-05 19:57:25,45.0,Eating Out,Impulse,Evening,Friday,49
+Dec 2025,2025-12-06 14:22:45,7.72,Eating Out,Impulse,Afternoon,Saturday,49
+Dec 2025,2025-12-06 22:07:19,16.3,Transportation,Necessary,Night,Saturday,49
+Dec 2025,2025-12-07 07:00:53,3.0,Eating Out,Impulse,Morning,Sunday,50
+Dec 2025,2025-12-07 07:01:29,6.63,Eating Out,Necessary,Morning,Sunday,50
+Dec 2025,2025-12-08 11:12:30,10.3,Eating Out,Necessary,Morning,Monday,50
+Dec 2025,2025-12-08 11:55:25,3.0,Eating Out,Impulse,Morning,Monday,50
+Dec 2025,2025-12-09 07:43:41,11.0,Eating Out,Social,Morning,Tuesday,50
+Dec 2025,2025-12-09 07:43:50,6.3,Eating Out,Necessary,Morning,Tuesday,50
+Dec 2025,2025-12-09 14:05:48,21.7,Cooking/Groceries,Impulse,Afternoon,Tuesday,50
+Dec 2025,2025-12-10 14:06:33,80.0,Projects,Planned,Afternoon,Wednesday,50
+Dec 2025,2025-12-12 13:35:48,33.0,Cooking/Groceries,Impulse,Afternoon,Friday,50
+Dec 2025,2025-12-12 13:36:32,15.0,Beauty/Grooming,Planned,Afternoon,Friday,50
+Dec 2025,2025-12-12 13:36:44,3.0,Eating Out,Impulse,Afternoon,Friday,50
+Dec 2025,2025-12-12 13:37:01,8.88,Eating Out,Impulse,Afternoon,Friday,50
+Dec 2025,2025-12-12 13:37:18,3.6,Eating Out,Necessary,Afternoon,Friday,50
+Dec 2025,2025-12-14 07:15:21,3.69,Eating Out,Necessary,Morning,Sunday,51
+Dec 2025,2025-12-14 15:28:18,42.0,Cooking/Groceries,Treat,Afternoon,Sunday,51
+Dec 2025,2025-12-15 06:03:31,3.69,Eating Out,Impulse,Morning,Monday,51
+Dec 2025,2025-12-15 16:24:57,105.93,Clothing,Impulse,Afternoon,Monday,51
+Dec 2025,2025-12-15 17:21:19,35.0,Transportation,Necessary,Evening,Monday,51
+Dec 2025,2025-12-17 07:58:23,5.1,Eating Out,Impulse,Morning,Wednesday,51
+Dec 2025,2025-12-18 07:11:30,6.43,Eating Out,Necessary,Morning,Thursday,51
+Dec 2025,2025-12-18 07:12:23,30.5,Eating Out,Social,Morning,Thursday,51
+Dec 2025,2025-12-18 10:58:58,5.0,Projects,Planned,Morning,Thursday,51
+Dec 2025,2025-12-19 15:42:37,45.0,Cooking/Groceries,Social,Afternoon,Friday,51
+Dec 2025,2025-12-20 12:12:34,30.0,Eating Out,Social,Afternoon,Saturday,51
+Dec 2025,2025-12-20 14:08:24,5.0,Projects,Necessary,Afternoon,Saturday,51
+Dec 2025,2025-12-20 19:03:01,40.0,Travel/Adventure,Necessary,Evening,Saturday,51
+Dec 2025,2025-12-20 19:03:14,6.63,Eating Out,Impulse,Evening,Saturday,51
+Dec 2025,2025-12-22 10:52:50,3.6,Eating Out,Impulse,Morning,Monday,52
+Dec 2025,2025-12-24 06:14:26,2.85,Eating Out,Impulse,Morning,Wednesday,52
+Dec 2025,2025-12-24 14:26:26,8.3,Eating Out,Social,Afternoon,Wednesday,52
+Dec 2025,2025-12-25 09:18:06,2.89,Eating Out,Treat,Morning,Thursday,52
+Dec 2025,2025-12-26 07:44:22,28.12,Transportation,Necessary,Morning,Friday,52
+Dec 2025,2025-12-26 07:44:39,2.19,Eating Out,Impulse,Morning,Friday,52
+Nov 2025,2025-11-01 13:06:12,9.0,Eating Out,Impulse,Afternoon,Saturday,44
+Nov 2025,2025-11-01 14:01:43,28.0,Cooking/Groceries,Planned,Afternoon,Saturday,44
+Nov 2025,2025-11-01 14:02:07,6.0,Eating Out,Impulse,Afternoon,Saturday,44
+Nov 2025,2025-11-01 14:02:25,8.0,Eating Out,Impulse,Afternoon,Saturday,44
+Nov 2025,2025-11-02 12:07:33,3.0,Eating Out,Impulse,Afternoon,Sunday,45
+Nov 2025,2025-11-02 17:51:49,24.0,Transportation,Planned,Evening,Sunday,45
+Nov 2025,2025-11-02 17:52:24,18.0,Cooking/Groceries,Impulse,Evening,Sunday,45
+Nov 2025,2025-11-04 07:12:45,5.0,Eating Out,Impulse,Morning,Tuesday,45
+Nov 2025,2025-11-05 08:08:20,11.0,Eating Out,Planned,Morning,Wednesday,45
+Nov 2025,2025-11-06 08:10:41,5.0,Eating Out,Impulse,Morning,Thursday,45
+Nov 2025,2025-11-06 09:50:02,8.0,Eating Out,Treat,Morning,Thursday,45
+Nov 2025,2025-11-06 12:13:03,61.0,Clothing,Necessary,Afternoon,Thursday,45
+Nov 2025,2025-11-07 08:28:41,5.0,Eating Out,Impulse,Morning,Friday,45
+Nov 2025,2025-11-07 08:28:55,10.0,Eating Out,Impulse,Morning,Friday,45
+Nov 2025,2025-11-07 16:26:57,10.0,Eating Out,Planned,Afternoon,Friday,45
+Nov 2025,2025-11-07 20:46:57,28.0,Eating Out,Impulse,Evening,Friday,45
+Nov 2025,2025-11-07 20:48:04,25.0,Transportation,Necessary,Evening,Friday,45
+Nov 2025,2025-11-08 12:43:42,11.0,Eating Out,Impulse,Afternoon,Saturday,45
+Nov 2025,2025-11-08 12:43:55,37.0,Eating Out,Social,Afternoon,Saturday,45
+Nov 2025,2025-11-09 08:04:08,6.0,Eating Out,Necessary,Morning,Sunday,46
+Nov 2025,2025-11-09 14:02:43,4.0,Eating Out,Necessary,Afternoon,Sunday,46
+Nov 2025,2025-11-09 14:02:50,6.0,Eating Out,Impulse,Afternoon,Sunday,46
+Nov 2025,2025-11-09 14:03:03,26.0,Transportation,Necessary,Afternoon,Sunday,46
+Nov 2025,2025-11-09 14:03:22,9.0,Cooking/Groceries,Planned,Afternoon,Sunday,46
+Nov 2025,2025-11-09 14:03:35,57.0,Cooking/Groceries,Planned,Afternoon,Sunday,46
+Nov 2025,2025-11-10 12:54:44,25.0,Eating Out,Impulse,Afternoon,Monday,46
+Nov 2025,2025-11-10 13:41:10,4.0,Eating Out,Social,Afternoon,Monday,46
+Nov 2025,2025-11-11 16:50:21,5.0,Eating Out,Impulse,Afternoon,Tuesday,46
+Nov 2025,2025-11-13 08:39:53,48.0,Eating Out,Social,Morning,Thursday,46
+Nov 2025,2025-11-13 15:02:34,5.0,Eating Out,Impulse,Afternoon,Thursday,46
+Nov 2025,2025-11-16 19:04:57,5.0,Eating Out,Impulse,Evening,Sunday,47
+Nov 2025,2025-11-19 06:34:52,20.0,Transportation,Necessary,Morning,Wednesday,47
+Nov 2025,2025-11-19 06:35:06,14.0,Eating Out,Treat,Morning,Wednesday,47
+Nov 2025,2025-11-20 20:15:42,9.0,Eating Out,Impulse,Evening,Thursday,47
+Nov 2025,2025-11-20 20:15:50,5.0,Eating Out,Impulse,Evening,Thursday,47
+Nov 2025,2025-11-20 20:16:02,100.0,Projects,Impulse,Evening,Thursday,47
+Nov 2025,2025-11-21 05:48:10,15.0,Cooking/Groceries,Necessary,Morning,Friday,47
+Nov 2025,2025-11-21 05:48:26,6.0,Eating Out,Necessary,Morning,Friday,47
+Nov 2025,2025-11-21 09:59:33,9.0,Eating Out,Impulse,Morning,Friday,47
+Nov 2025,2025-11-22 06:20:33,32.0,Transportation,Necessary,Morning,Saturday,47
+Nov 2025,2025-11-22 06:20:41,6.0,Eating Out,Necessary,Morning,Saturday,47
+Nov 2025,2025-11-22 06:20:47,7.0,Eating Out,Impulse,Morning,Saturday,47
+Nov 2025,2025-11-22 18:56:24,7.0,Eating Out,Impulse,Evening,Saturday,47
+Nov 2025,2025-11-23 19:53:26,17.0,Eating Out,Social,Evening,Sunday,48
+Nov 2025,2025-11-26 08:44:34,10.0,Clothing,Necessary,Morning,Wednesday,48
+Nov 2025,2025-11-26 08:45:09,93.0,Clothing,Impulse,Morning,Wednesday,48
+Nov 2025,2025-11-26 08:45:30,53.0,Eating Out,Social,Morning,Wednesday,48
+Nov 2025,2025-11-26 08:45:48,16.0,Transportation,Necessary,Morning,Wednesday,48
+Nov 2025,2025-11-26 08:46:24,21.0,Transportation,Planned,Morning,Wednesday,48
+Nov 2025,2025-11-26 08:46:36,9.0,Eating Out,Planned,Morning,Wednesday,48
+Nov 2025,2025-11-27 12:46:28,7.0,Eating Out,Impulse,Afternoon,Thursday,48
+Nov 2025,2025-11-28 12:32:04,4.0,Eating Out,Impulse,Afternoon,Friday,48
+Nov 2025,2025-11-28 19:29:22,8.0,Eating Out,Necessary,Evening,Friday,48
