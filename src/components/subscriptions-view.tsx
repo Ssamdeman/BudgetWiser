@@ -1,21 +1,22 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { SubscriptionPasswordGate } from './subscription-password-gate';
 import { fetchSubscriptions } from '@/lib/subscription-parser';
 import type { SubscriptionsData, Subscription, SubscriptionStatus } from '@/lib/types';
 import { 
-  DollarSign, 
   Calendar, 
-  CreditCard, 
   CheckCircle2, 
   XCircle, 
   Clock,
-  Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+// Auto-lock timer duration (10 minutes in ms)
+const AUTO_LOCK_DURATION = 10 * 60 * 1000;
 
 // Status badge styles
 const statusConfig: Record<SubscriptionStatus, { bg: string; text: string; icon: React.ReactNode }> = {
@@ -116,39 +117,8 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
   );
 }
 
-export function SubscriptionsView() {
-  const [data, setData] = useState<SubscriptionsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchSubscriptions()
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardContent className="flex flex-col items-center justify-center py-16 gap-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-muted-foreground text-sm">Loading subscriptions...</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <Card className="border-destructive/50 bg-destructive/5">
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="text-destructive">Failed to load subscriptions: {error}</div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+// Subscription Content (shown after unlock)
+function SubscriptionContent({ data }: { data: SubscriptionsData }) {
   // Group subscriptions by status
   const activeList = data.subscriptions.filter(s => s.status === 'Active');
   const doneList = data.subscriptions.filter(s => s.status === 'Done');
@@ -255,4 +225,76 @@ export function SubscriptionsView() {
       </Accordion>
     </div>
   );
+}
+
+export function SubscriptionsView() {
+  // Auth state - always starts locked
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Data state - only fetched after unlock
+  const [data, setData] = useState<SubscriptionsData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Clear timer on unmount
+  useEffect(() => {
+    return () => {
+      if (lockTimerRef.current) {
+        clearTimeout(lockTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Handle successful unlock
+  const handleUnlock = useCallback(() => {
+    setIsUnlocked(true);
+    setLoading(true);
+    setError(null);
+    
+    // Fetch data after unlock
+    fetchSubscriptions()
+      .then(setData)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+    
+    // Start 10-minute auto-lock timer (silent)
+    if (lockTimerRef.current) {
+      clearTimeout(lockTimerRef.current);
+    }
+    lockTimerRef.current = setTimeout(() => {
+      setIsUnlocked(false);
+      setData(null);
+    }, AUTO_LOCK_DURATION);
+  }, []);
+
+  // Show password gate when locked
+  if (!isUnlocked) {
+    return <SubscriptionPasswordGate onUnlock={handleUnlock} />;
+  }
+
+  // Loading state (after unlock)
+  if (loading) {
+    return (
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <CardContent className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground text-sm">Loading subscriptions...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Error state
+  if (error || !data) {
+    return (
+      <Card className="border-destructive/50 bg-destructive/5">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="text-destructive">Failed to load subscriptions: {error}</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return <SubscriptionContent data={data} />;
 }

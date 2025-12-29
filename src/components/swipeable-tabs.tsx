@@ -21,14 +21,21 @@ type SwipeableTabsProps = {
 export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [activeTab, setActiveTab] = React.useState(0);
+  const [isReady, setIsReady] = React.useState(false);
 
   React.useEffect(() => {
     if (!api) {
       return;
     }
 
+    // Sync initial state
+    setActiveTab(api.selectedScrollSnap());
+    setIsReady(true);
+
     const onSelect = (api: CarouselApi) => {
-      setActiveTab(api.selectedScrollSnap());
+      if (api) {
+        setActiveTab(api.selectedScrollSnap());
+      }
     };
 
     api.on('select', onSelect);
@@ -63,7 +70,20 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent>
           {tabs.map((tab, index) => (
-            <CarouselItem key={index}>{tab.content}</CarouselItem>
+            <CarouselItem key={index}>
+              <div 
+                className={cn(
+                  'transition-opacity duration-200',
+                  // Before ready: show first tab, hide others
+                  // After ready: show active tab only
+                  !isReady 
+                    ? (index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none')
+                    : (activeTab === index ? 'opacity-100' : 'opacity-0 pointer-events-none')
+                )}
+              >
+                {tab.content}
+              </div>
+            </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
