@@ -21,7 +21,8 @@ type SwipeableTabsProps = {
 export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [activeTab, setActiveTab] = React.useState(0);
-  const [isReady, setIsReady] = React.useState(false);
+  // Track which tabs have been visited (for lazy loading)
+  const [visitedTabs, setVisitedTabs] = React.useState<Set<number>>(new Set([0]));
 
   React.useEffect(() => {
     if (!api) {
@@ -30,11 +31,13 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
 
     // Sync initial state
     setActiveTab(api.selectedScrollSnap());
-    setIsReady(true);
 
     const onSelect = (api: CarouselApi) => {
       if (api) {
-        setActiveTab(api.selectedScrollSnap());
+        const newTab = api.selectedScrollSnap();
+        setActiveTab(newTab);
+        // Mark tab as visited
+        setVisitedTabs(prev => new Set(prev).add(newTab));
       }
     };
 
@@ -48,6 +51,8 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
   const handleTabClick = (index: number) => {
     api?.scrollTo(index);
     setActiveTab(index);
+    // Mark tab as visited
+    setVisitedTabs(prev => new Set(prev).add(index));
   };
 
   return (
@@ -71,18 +76,8 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
         <CarouselContent>
           {tabs.map((tab, index) => (
             <CarouselItem key={index}>
-              <div 
-                className={cn(
-                  'transition-opacity duration-200',
-                  // Before ready: show first tab, hide others
-                  // After ready: show active tab only
-                  !isReady 
-                    ? (index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none')
-                    : (activeTab === index ? 'opacity-100' : 'opacity-0 pointer-events-none')
-                )}
-              >
-                {tab.content}
-              </div>
+              {/* Only render content for visited tabs to prevent password gate bleed-through */}
+              {visitedTabs.has(index) ? tab.content : <div className="min-h-[200px]" />}
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -90,3 +85,4 @@ export function SwipeableTabs({ tabs, className }: SwipeableTabsProps) {
     </div>
   );
 }
+
