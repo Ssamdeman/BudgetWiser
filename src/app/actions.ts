@@ -51,3 +51,46 @@ export async function logExpenseAction(data: z.infer<typeof expenseSchema>) {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE SHEET DATA SERVER ACTIONS (Current Month Feature)
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { fetchLiveSheetData } from "@/lib/google-sheets";
+import { parseSheetToV2Entries } from "@/lib/csv-parser";
+import type { V2ExpenseEntry } from "@/lib/types";
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/**
+ * Fetches expenses for the current month only from the live Google Sheet
+ */
+export async function fetchCurrentMonthExpenses(): Promise<V2ExpenseEntry[]> {
+  try {
+    const rows = await fetchLiveSheetData();
+    const entries = parseSheetToV2Entries(rows);
+    
+    // Get current month prefix (e.g., "Jan 2026")
+    const now = new Date();
+    const currentMonthPrefix = `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+    
+    // Filter to current month only
+    return entries.filter(e => e.month === currentMonthPrefix);
+  } catch (error) {
+    console.error('Error fetching current month expenses:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetches ALL expenses from the live Google Sheet (for merging with CSV)
+ */
+export async function fetchAllLiveExpenses(): Promise<V2ExpenseEntry[]> {
+  try {
+    const rows = await fetchLiveSheetData();
+    return parseSheetToV2Entries(rows);
+  } catch (error) {
+    console.error('Error fetching all live expenses:', error);
+    return [];
+  }
+}

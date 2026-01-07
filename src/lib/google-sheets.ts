@@ -63,3 +63,29 @@ export async function appendExpenseToSheet(
     throw error;
   }
 }
+
+/**
+ * Fetches all expense data from the Google Sheet
+ * Reads columns C:I (Amount, Category, Mood, TimeOfDay, DayOfWeek, WeekNumber, Date)
+ * Starting from row 5 (skipping headers)
+ */
+export async function fetchLiveSheetData(): Promise<string[][]> {
+  try {
+    const sheets = await getGoogleSheetsClient();
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+    if (!spreadsheetId) {
+      throw new Error('GOOGLE_SHEET_ID is not defined');
+    }
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Transactions!C5:I',
+    });
+
+    return response.data.values || [];
+  } catch (error) {
+    console.error('❌ Error fetching live sheet data:', error);
+    throw error;
+  }
+}

@@ -17,6 +17,9 @@ import { MoodAnalysisChart } from './charts/mood-analysis-chart';
 import { SpendingHeatmap } from './charts/spending-heatmap';
 import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 
+// Current Month View (Live Data)
+import { CurrentMonthView } from './current-month-view';
+
 // Data & Types
 import { fetchAndParseCSV, fetchAndParseV2CSV, type AnalyticsData } from '@/lib/csv-parser';
 import type { V2AnalyticsData } from '@/lib/types';
@@ -32,7 +35,8 @@ import {
   Clock, 
   Grid3X3, 
   Sparkles,
-  History
+  History,
+  Zap
 } from 'lucide-react';
 
 export function AnalysisView() {
@@ -141,10 +145,33 @@ export function AnalysisView() {
       {/* Accordion Sections */}
       <Accordion 
         type="multiple" 
-        defaultValue={v2Data ? ["v2-insights"] : ["v1-historical"]}
+        defaultValue={["current-month"]}
         className="space-y-4"
       >
-        {/* V2 Section - 2026 Insights (Expanded by default, FIRST) */}
+        {/* Current Month Section - LIVE DATA (Expanded by default, FIRST) */}
+        <AccordionItem value="current-month" className="border border-primary/30 rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm">
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/30 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-green-500/20">
+                <Zap className="w-5 h-5 text-green-500" />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-lg">Current Month</span>
+                  <Badge className="bg-green-500/20 text-green-500 border-green-500/30 hover:bg-green-500/30 animate-pulse">Live</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground font-normal">
+                  Real-time spending from Google Sheets
+                </p>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <CurrentMonthView />
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* V2 Section - 2026 Insights (Collapsed by default, SECOND) */}
         {v2Data && (
           <AccordionItem value="v2-insights" className="border border-border/50 rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm">
             <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/30 transition-colors">
@@ -158,7 +185,7 @@ export function AnalysisView() {
                     <Badge className="bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">Current</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground font-normal">
-                    Mood, timing, and behavioral patterns
+                    Mood, timing, and behavioral patterns (CSV + Live merged)
                   </p>
                 </div>
               </div>

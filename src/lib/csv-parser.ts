@@ -487,3 +487,116 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE SHEET DATA FUNCTIONS (Current Month Feature)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Converts a date string (e.g. "1/7/2026" or "01/07/2026") to month format "Jan 2026"
+ */
+function formatDateToMonth(dateStr: string): string {
+  if (!dateStr) return '';
+  
+  const parts = dateStr.split('/');
+  if (parts.length < 3) return '';
+  
+  const monthIndex = parseInt(parts[0], 10) - 1;
+  const year = parts[2];
+  
+  if (monthIndex < 0 || monthIndex > 11) return '';
+  
+  return `${MONTH_ORDER[monthIndex]} ${year}`;
+}
+
+/**
+ * Parses Google Sheet rows (C:I columns) to V2ExpenseEntry[]
+ * Sheet columns: C=Amount, D=Category, E=Mood, F=TimeOfDay, G=DayOfWeek, H=WeekNumber, I=Date
+ */
+export function parseSheetToV2Entries(rows: string[][]): V2ExpenseEntry[] {
+  return rows
+    .filter(row => row[0] && row[6]) // Must have Amount (C) and Date (I)
+    .map(row => ({
+      month: formatDateToMonth(row[6]),
+      date: row[6]?.trim() || '',
+      amount: parseFloat(row[0]) || 0,
+      category: normalizeCategory(row[1] || 'Other'),
+      mood: (row[2]?.trim() || 'Planned') as Mood,
+      timeOfDay: (row[3]?.trim() || 'Afternoon') as TimeOfDay,
+      dayOfWeek: (row[4]?.trim() || 'Monday') as DayOfWeek,
+      weekNumber: parseInt(row[5]?.trim() || '1', 10),
+    }))
+    .filter(entry => entry.month && entry.amount > 0);
+}
+
+/**
+ * Merges CSV entries with live sheet entries, deduplicating by date+amount+category
+ * Live entries take priority (they're fresher)
+ */
+export function mergeV2DataSources(
+  csvEntries: V2ExpenseEntry[],
+  liveEntries: V2ExpenseEntry[]
+): V2ExpenseEntry[] {
+  const seen = new Set<string>();
+  const merged: V2ExpenseEntry[] = [];
+  
+  // Live entries take priority
+  for (const entry of liveEntries) {
+    const key = `${entry.date}-${entry.amount}-${entry.category}`;
+    seen.add(key);
+    merged.push(entry);
+  }
+  
+  // Add CSV entries not in live
+  for (const entry of csvEntries) {
+    const key = `${entry.date}-${entry.amount}-${entry.category}`;
+    if (!seen.has(key)) {
+      merged.push(entry);
+    }
+  }
+  
+  return merged;
+}
+
+/**
+ * Processes V2ExpenseEntry[] into full V2AnalyticsData
+ * Extracted from fetchAndParseV2CSV for reuse with live data
+ */
+export function processV2Entries(entries: V2ExpenseEntry[]): V2AnalyticsData | null {
+  if (entries.length === 0) return null;
+  
+  const moodTotals = aggregateByMood(entries);
+  const moodByMonth = aggregateMoodByMonth(entries);
+  const dayTotals = aggregateByDayOfWeek(entries);
+  const timeOfDayTotals = aggregateByTimeOfDay(entries);
+  const heatmapData = aggregateDayTimeHeatmap(entries);
+  
+  // Reuse existing aggregateByCategory for V2
+  const v2Entries = entries.map(e => ({
+    month: e.month,
+    date: e.date,
+    amount: e.amount,
+    category: e.category,
+  }));
+  const categoryTotals = aggregateByCategory(v2Entries);
+  
+  const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
+  const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
+  
+  // Hero insights
+  const topMood = moodTotals.length > 0 ? { mood: moodTotals[0].mood, percentage: moodTotals[0].percentage } : null;
+  const peakSpendingTime = findPeakSpending(heatmapData);
+  
+  return {
+    entries,
+    grandTotal: Math.round(grandTotal * 100) / 100,
+    monthCount: monthsWithData.size,
+    moodTotals,
+    moodByMonth,
+    dayTotals,
+    timeOfDayTotals,
+    heatmapData,
+    categoryTotals,
+    topMood,
+    peakSpendingTime,
+  };
+}
