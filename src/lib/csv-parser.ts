@@ -492,12 +492,15 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Converts a date string (e.g. "1/7/2026" or "01/07/2026") to month format "Jan 2026"
+ * Converts a date string (e.g. "1/7/2026" or "1/7/2026 6:50:48") to month format "Jan 2026"
  */
 function formatDateToMonth(dateStr: string): string {
   if (!dateStr) return '';
   
-  const parts = dateStr.split('/');
+  // Strip time component if present (e.g., "1/2/2026 6:50:48" -> "1/2/2026")
+  const dateOnly = dateStr.split(' ')[0];
+  
+  const parts = dateOnly.split('/');
   if (parts.length < 3) return '';
   
   const monthIndex = parseInt(parts[0], 10) - 1;

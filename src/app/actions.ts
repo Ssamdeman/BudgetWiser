@@ -68,14 +68,23 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 export async function fetchCurrentMonthExpenses(): Promise<V2ExpenseEntry[]> {
   try {
     const rows = await fetchLiveSheetData();
+    console.log('📊 Raw rows from sheet:', rows.length, 'rows');
+    console.log('📊 First 3 rows:', JSON.stringify(rows.slice(0, 3)));
+    
     const entries = parseSheetToV2Entries(rows);
+    console.log('📊 Parsed entries:', entries.length);
+    console.log('📊 First 3 entries:', JSON.stringify(entries.slice(0, 3)));
     
     // Get current month prefix (e.g., "Jan 2026")
     const now = new Date();
     const currentMonthPrefix = `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+    console.log('📊 Looking for month:', currentMonthPrefix);
     
     // Filter to current month only
-    return entries.filter(e => e.month === currentMonthPrefix);
+    const filtered = entries.filter(e => e.month === currentMonthPrefix);
+    console.log('📊 Filtered to current month:', filtered.length);
+    
+    return filtered;
   } catch (error) {
     console.error('Error fetching current month expenses:', error);
     return [];
