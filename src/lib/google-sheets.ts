@@ -40,12 +40,6 @@ export async function appendExpenseToSheet(
   purchaseType: string
 ) {
   try {
-    // Log what we received
-    console.log('📥 Received individual values:');
-    console.log('  - Amount:', amount, '(type:', typeof amount, ')');
-    console.log('  - Category:', category, '(type:', typeof category, ')');
-    console.log('  - Purchase Type:', purchaseType, '(type:', typeof purchaseType, ')');
-    
     const sheets = await getGoogleSheetsClient();
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
@@ -53,10 +47,7 @@ export async function appendExpenseToSheet(
       throw new Error('GOOGLE_SHEET_ID is not defined');
     }
 
-    // ✅ MODIFICATION: We already have the values, no need to destructure
     const values = [[amount, category, purchaseType]];
-    
-    console.log('📤 Final values array:', JSON.stringify(values, null, 2));
 
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -67,7 +58,7 @@ export async function appendExpenseToSheet(
       },
     });
 
-    console.log('✅ Google Sheets response:', JSON.stringify(response.data, null, 2));
+
 
     return {
       success: true,
