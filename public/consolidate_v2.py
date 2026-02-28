@@ -143,23 +143,42 @@ def parse_date(date_str):
 
 
 def extract_month_from_header(header_line):
-    """Extract month from header like 'November 2025,,,,,,'"""
+    """Extract month from header like 'November 2025,,,,,,' or 'feb-2026'"""
+    # Remove commas and surrounding whitespace
     clean = header_line.replace(",", "").strip()
     
-    # Try "November 2025"
-    try:
-        dt = datetime.strptime(clean, "%B %Y")
-        return dt.strftime("%b %Y")  # "Nov 2025"
-    except ValueError:
-        pass
+    # Normalize delimiters: replace hyphens, slashes, and dots with spaces
+    for char in ['-', '/', '.']:
+        clean = clean.replace(char, ' ')
     
-    # Try "Nov 2025"
-    try:
-        dt = datetime.strptime(clean, "%b %Y")
-        return dt.strftime("%b %Y")
-    except ValueError:
-        pass
+    # Fix common typos in month names (lowercase for replacement logic)
+    clean_lower = clean.lower()
+    typos = {
+        'feburary': 'february',
+        'janurary': 'january',
+        'oktober': 'october'
+    }
+    for typo, correction in typos.items():
+        if typo in clean_lower:
+            # We do a naive replace, then capitalize the result later via strptime
+            clean = clean_lower.replace(typo, correction)
+            break
+            
+    # Try multiple formats
+    formats = [
+        "%B %Y",  # February 2026, february 2026
+        "%b %Y",  # Feb 2026, feb 2026
+        "%m %Y",  # 02 2026
+    ]
     
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(clean.strip(), fmt)
+            return dt.strftime("%b %Y")  # Always returns "Feb 2026"
+        except ValueError:
+            continue
+            
+    # Fallback to the original cleaned string if all else fails
     return clean
 
 
