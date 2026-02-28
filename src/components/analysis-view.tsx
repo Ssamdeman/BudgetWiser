@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Badge } from './ui/badge';
 
 // V1 Charts
@@ -17,8 +18,9 @@ import { MoodAnalysisChart } from './charts/mood-analysis-chart';
 import { SpendingHeatmap } from './charts/spending-heatmap';
 import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 
-// Current Month View (Live Data)
+// Features
 import { CurrentMonthView } from './current-month-view';
+import { PreviousMonthView } from './previous-month-view';
 
 // Data & Types
 import { fetchAndParseCSV, type AnalyticsData } from '@/lib/csv-parser';
@@ -168,7 +170,20 @@ export function AnalysisView() {
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-5 pb-5">
-            <CurrentMonthView />
+            <Tabs defaultValue="current" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="current">Current Month</TabsTrigger>
+                <TabsTrigger value="previous">Previous Month</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="current">
+                <CurrentMonthView />
+              </TabsContent>
+
+              <TabsContent value="previous">
+                <PreviousMonthView />
+              </TabsContent>
+            </Tabs>
           </AccordionContent>
         </AccordionItem>
 

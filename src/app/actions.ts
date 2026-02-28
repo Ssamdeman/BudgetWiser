@@ -76,6 +76,37 @@ export async function fetchCurrentMonthExpenses(): Promise<V2ExpenseEntry[]> {
 }
 
 /**
+ * Fetches expenses for the PREVIOUS month dynamically from the V2 CSV file.
+ * e.g., if now is Feb 2026, searches "Jan 2026".
+ * Wraps properly (Jan 2026 -> Dec 2025).
+ */
+export async function fetchPreviousMonthExpenses(): Promise<V2ExpenseEntry[]> {
+  try {
+    const v2Data = await fetchV2CSVData();
+    if (!v2Data || !v2Data.entries) return [];
+
+    // Determine the previous month prefix (e.g., "Jan 2026")
+    const now = new Date();
+    let prevMonthIndex = now.getMonth() - 1;
+    let prevMonthYear = now.getFullYear();
+
+    // Wrap around for January -> December of previous year
+    if (prevMonthIndex < 0) {
+      prevMonthIndex = 11; // December is explicitly index 11
+      prevMonthYear -= 1;
+    }
+
+    const previousMonthPrefix = `${MONTH_NAMES[prevMonthIndex]} ${prevMonthYear}`;
+
+    // Filter the CSV explicitly to only entries matching the determined previous month
+    return v2Data.entries.filter(e => e.month === previousMonthPrefix);
+  } catch (error) {
+    console.error('Error fetching previous month expenses:', error);
+    return [];
+  }
+}
+
+/**
  * Fetches ALL expenses from the live Google Sheet (for merging with CSV)
  */
 export async function fetchAllLiveExpenses(): Promise<V2ExpenseEntry[]> {
