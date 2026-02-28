@@ -21,19 +21,20 @@ import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 import { CurrentMonthView } from './current-month-view';
 
 // Data & Types
-import { fetchAndParseCSV, fetchAndParseV2CSV, type AnalyticsData } from '@/lib/csv-parser';
+import { fetchAndParseCSV, type AnalyticsData } from '@/lib/csv-parser';
 import type { V2AnalyticsData } from '@/lib/types';
+import { fetchV2CSVData } from '@/app/actions';
 
 // Icons
-import { 
-  TrendingUp, 
-  PieChart, 
-  BarChart3, 
-  ArrowUpDown, 
-  Brain, 
-  Calendar, 
-  Clock, 
-  Grid3X3, 
+import {
+  TrendingUp,
+  PieChart,
+  BarChart3,
+  ArrowUpDown,
+  Brain,
+  Calendar,
+  Clock,
+  Grid3X3,
   Sparkles,
   History,
   Zap
@@ -48,7 +49,7 @@ export function AnalysisView() {
   useEffect(() => {
     Promise.all([
       fetchAndParseCSV(),
-      fetchAndParseV2CSV()
+      fetchV2CSVData()
     ])
       .then(([v1, v2]) => {
         setV1Data(v1);
@@ -97,7 +98,7 @@ export function AnalysisView() {
                   across <span className="font-medium text-foreground">{v2Data.monthCount}</span> months
                 </p>
               </div>
-              
+
               {/* Top Mood */}
               {v2Data.topMood && (
                 <div className="text-center border-l border-r border-border/30 px-4">
@@ -106,7 +107,7 @@ export function AnalysisView() {
                   <p className="text-sm text-primary font-medium">{v2Data.topMood.percentage}% of spending</p>
                 </div>
               )}
-              
+
               {/* Peak Spending Time */}
               {v2Data.peakSpendingTime && (
                 <div className="text-center md:text-right">
@@ -143,8 +144,8 @@ export function AnalysisView() {
       )}
 
       {/* Accordion Sections */}
-      <Accordion 
-        type="multiple" 
+      <Accordion
+        type="multiple"
         defaultValue={["current-month"]}
         className="space-y-4"
       >
@@ -192,6 +193,36 @@ export function AnalysisView() {
             </AccordionTrigger>
             <AccordionContent className="px-5 pb-5">
               <div className="space-y-5 pt-2">
+                {/* NEW: Monthly Spent Summary Grid */}
+                <div className="flex flex-col gap-4">
+                  {/* Top Section: Combined Total (Full Width) */}
+                  <Card className="w-full border-primary/30 bg-primary/5 hover:border-primary/50 transition-colors">
+                    <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                      <p className="text-xs uppercase tracking-widest text-primary mb-1">Combined Total</p>
+                      <p className="text-3xl font-bold text-primary tracking-tight">
+                        ${v2Data.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Bottom Section: Infinite Responsive Monthly Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {v2Data.monthlyTotals
+                      .filter(m => m.total > 0)
+                      .map(m => (
+                        <Card key={m.month} className="border-border/50 hover:border-primary/20 transition-colors bg-card/60">
+                          <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">{m.month}</p>
+                            <p className="text-xl font-bold text-foreground">
+                              ${m.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))
+                    }
+                  </div>
+                </div>
+
                 {/* Chart 1: Monthly Spending by Mood */}
                 <Card className="border-border/50 hover:border-border transition-colors">
                   <CardHeader className="pb-2">

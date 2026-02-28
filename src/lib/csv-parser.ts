@@ -56,22 +56,22 @@ const MONTH_ORDER = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
  */
 function normalizeCategory(category: string): string {
   const trimmed = category.trim();
-  
+
   // Typo fix
   if (trimmed.toLowerCase() === 'eating out' || trimmed === 'EAting Out') {
     return 'Eating Out';
   }
-  
+
   // Tourist destination → Travel
   if (trimmed === 'Personal-High Falls Gorge') {
     return 'Travel/Adventure';
   }
-  
+
   // Personal → Beauty/Grooming
   if (trimmed === 'Personal') {
     return 'Beauty/Grooming';
   }
-  
+
   return trimmed;
 }
 
@@ -81,12 +81,12 @@ function normalizeCategory(category: string): string {
 function parseCSV(csvText: string): ExpenseEntry[] {
   const lines = csvText.split('\n').filter(line => line.trim());
   const entries: ExpenseEntry[] = [];
-  
+
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].replace('\r', '');
     const [month, date, amount, category] = line.split(',');
-    
+
     if (month && amount && category) {
       entries.push({
         month: month.trim(),
@@ -96,7 +96,7 @@ function parseCSV(csvText: string): ExpenseEntry[] {
       });
     }
   }
-  
+
   return entries;
 }
 
@@ -105,10 +105,10 @@ function parseCSV(csvText: string): ExpenseEntry[] {
  */
 function aggregateByMonth(entries: ExpenseEntry[]): MonthlyTotal[] {
   const totals = new Map<string, number>();
-  
+
   // Initialize all months with 0
   MONTH_ORDER.forEach(month => totals.set(month, 0));
-  
+
   // Sum by month
   entries.forEach(entry => {
     // Extract short month name from "Sep 2025" format
@@ -116,7 +116,7 @@ function aggregateByMonth(entries: ExpenseEntry[]): MonthlyTotal[] {
     const current = totals.get(shortMonth) || 0;
     totals.set(shortMonth, current + entry.amount);
   });
-  
+
   // Return in calendar order
   return MONTH_ORDER.map(month => ({
     month,
@@ -130,14 +130,14 @@ function aggregateByMonth(entries: ExpenseEntry[]): MonthlyTotal[] {
 function aggregateByCategory(entries: ExpenseEntry[]): CategoryTotal[] {
   const totals = new Map<string, number>();
   let grandTotal = 0;
-  
+
   // Sum by category
   entries.forEach(entry => {
     const current = totals.get(entry.category) || 0;
     totals.set(entry.category, current + entry.amount);
     grandTotal += entry.amount;
   });
-  
+
   // Convert to array with percentages, sorted by total descending
   return Array.from(totals.entries())
     .map(([category, total]) => ({
@@ -154,7 +154,7 @@ function aggregateByCategory(entries: ExpenseEntry[]): CategoryTotal[] {
 function aggregateCategoryByMonth(entries: ExpenseEntry[], categories: string[]): CategoryByMonth[] {
   // Group by month first
   const monthData = new Map<string, Map<string, number>>();
-  
+
   entries.forEach(entry => {
     const shortMonth = entry.month.split(' ')[0];
     if (!monthData.has(shortMonth)) {
@@ -164,18 +164,18 @@ function aggregateCategoryByMonth(entries: ExpenseEntry[], categories: string[])
     const current = categoryMap.get(entry.category) || 0;
     categoryMap.set(entry.category, current + entry.amount);
   });
-  
+
   // Convert to array, sorted by MONTH_ORDER, only months with data
   return MONTH_ORDER
     .filter(month => monthData.has(month))
     .map(month => {
       const categoryMap = monthData.get(month)!;
       const result: CategoryByMonth = { month };
-      
+
       categories.forEach(category => {
         result[category] = Math.round((categoryMap.get(category) || 0) * 100) / 100;
       });
-      
+
       return result;
     });
 }
@@ -185,19 +185,19 @@ function aggregateCategoryByMonth(entries: ExpenseEntry[], categories: string[])
  */
 function calculateMonthOverMonth(monthlyTotals: MonthlyTotal[]): MonthlyChange[] {
   const changes: MonthlyChange[] = [];
-  
+
   // Filter to only months with data
   const monthsWithData = monthlyTotals.filter(m => m.total > 0);
-  
+
   // Skip first month (no previous to compare)
   for (let i = 1; i < monthsWithData.length; i++) {
     const previous = monthsWithData[i - 1];
     const current = monthsWithData[i];
-    
+
     const percentChange = previous.total > 0
       ? Math.round(((current.total - previous.total) / previous.total) * 1000) / 10
       : 0;
-    
+
     changes.push({
       month: current.month,
       previousMonth: previous.month,
@@ -206,7 +206,7 @@ function calculateMonthOverMonth(monthlyTotals: MonthlyTotal[]): MonthlyChange[]
       percentChange,
     });
   }
-  
+
   return changes;
 }
 
@@ -216,22 +216,22 @@ function calculateMonthOverMonth(monthlyTotals: MonthlyTotal[]): MonthlyChange[]
 export async function fetchAndParseCSV(): Promise<AnalyticsData> {
   const response = await fetch('/V1-2025-Mastered-data/V1_master_finances-2025.csv');
   const csvText = await response.text();
-  
+
   const entries = parseCSV(csvText);
   const monthlyTotals = aggregateByMonth(entries);
   const categoryTotals = aggregateByCategory(entries);
-  
+
   // Get all unique categories
   const allCategories = [...new Set(entries.map(e => e.category))].sort();
-  
+
   // Calculate new aggregations
   const categoryByMonth = aggregateCategoryByMonth(entries, allCategories);
   const monthlyChanges = calculateMonthOverMonth(monthlyTotals);
-  
+
   // Calculate grand total and count of months with data
   const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
   const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
-  
+
   return {
     entries,
     monthlyTotals,
@@ -248,13 +248,13 @@ export async function fetchAndParseCSV(): Promise<AnalyticsData> {
 // V2 PARSER (2026+ Data with Mood, TimeOfDay, DayOfWeek)
 // ═══════════════════════════════════════════════════════════════════════════
 
-import type { 
-  V2ExpenseEntry, 
-  V2AnalyticsData, 
-  MoodTotal, 
-  MoodByMonth, 
-  DayTotal, 
-  TimeOfDayTotal, 
+import type {
+  V2ExpenseEntry,
+  V2AnalyticsData,
+  MoodTotal,
+  MoodByMonth,
+  DayTotal,
+  TimeOfDayTotal,
   DayTimeHeatmapCell,
   Mood,
   TimeOfDay,
@@ -265,19 +265,19 @@ import { expensePurchaseTypes, timeOfDayOptions, daysOfWeek } from './types';
 /**
  * Parses V2 CSV format: Month,Date,Amount,Category,Mood,TimeOfDay,DayOfWeek,WeekNumber
  */
-function parseV2CSV(csvText: string): V2ExpenseEntry[] {
+export function parseV2CSV(csvText: string): V2ExpenseEntry[] {
   const lines = csvText.split('\n').filter(line => line.trim());
   const entries: V2ExpenseEntry[] = [];
-  
+
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].replace('\r', '');
     const parts = line.split(',');
-    
+
     if (parts.length < 8) continue;
-    
+
     const [month, date, amount, category, mood, timeOfDay, dayOfWeek, weekNumber] = parts;
-    
+
     if (month && amount && category) {
       entries.push({
         month: month.trim(),
@@ -291,7 +291,7 @@ function parseV2CSV(csvText: string): V2ExpenseEntry[] {
       });
     }
   }
-  
+
   return entries;
 }
 
@@ -301,13 +301,13 @@ function parseV2CSV(csvText: string): V2ExpenseEntry[] {
 function aggregateByMood(entries: V2ExpenseEntry[]): MoodTotal[] {
   const totals = new Map<string, number>();
   let grandTotal = 0;
-  
+
   entries.forEach(entry => {
     const current = totals.get(entry.mood) || 0;
     totals.set(entry.mood, current + entry.amount);
     grandTotal += entry.amount;
   });
-  
+
   // Ensure all moods are represented
   return (expensePurchaseTypes as readonly string[]).map(mood => {
     const total = totals.get(mood) || 0;
@@ -324,7 +324,7 @@ function aggregateByMood(entries: V2ExpenseEntry[]): MoodTotal[] {
  */
 function aggregateMoodByMonth(entries: V2ExpenseEntry[]): MoodByMonth[] {
   const monthData = new Map<string, Map<string, number>>();
-  
+
   entries.forEach(entry => {
     const shortMonth = entry.month.split(' ')[0];
     if (!monthData.has(shortMonth)) {
@@ -334,18 +334,18 @@ function aggregateMoodByMonth(entries: V2ExpenseEntry[]): MoodByMonth[] {
     const current = moodMap.get(entry.mood) || 0;
     moodMap.set(entry.mood, current + entry.amount);
   });
-  
+
   // Return in calendar order, only months with data
   return MONTH_ORDER
     .filter(month => monthData.has(month))
     .map(month => {
       const moodMap = monthData.get(month)!;
       const result: MoodByMonth = { month };
-      
+
       (expensePurchaseTypes as readonly string[]).forEach(mood => {
         result[mood] = Math.round((moodMap.get(mood) || 0) * 100) / 100;
       });
-      
+
       return result;
     });
 }
@@ -355,12 +355,12 @@ function aggregateMoodByMonth(entries: V2ExpenseEntry[]): MoodByMonth[] {
  */
 function aggregateByDayOfWeek(entries: V2ExpenseEntry[]): DayTotal[] {
   const totals = new Map<string, number>();
-  
+
   entries.forEach(entry => {
     const current = totals.get(entry.dayOfWeek) || 0;
     totals.set(entry.dayOfWeek, current + entry.amount);
   });
-  
+
   return (daysOfWeek as readonly string[]).map(day => ({
     day: day as DayOfWeek,
     total: Math.round((totals.get(day) || 0) * 100) / 100,
@@ -372,12 +372,12 @@ function aggregateByDayOfWeek(entries: V2ExpenseEntry[]): DayTotal[] {
  */
 function aggregateByTimeOfDay(entries: V2ExpenseEntry[]): TimeOfDayTotal[] {
   const totals = new Map<string, number>();
-  
+
   entries.forEach(entry => {
     const current = totals.get(entry.timeOfDay) || 0;
     totals.set(entry.timeOfDay, current + entry.amount);
   });
-  
+
   return (timeOfDayOptions as readonly string[]).map(time => ({
     timeOfDay: time as TimeOfDay,
     total: Math.round((totals.get(time) || 0) * 100) / 100,
@@ -390,7 +390,7 @@ function aggregateByTimeOfDay(entries: V2ExpenseEntry[]): TimeOfDayTotal[] {
 function aggregateDayTimeHeatmap(entries: V2ExpenseEntry[]): DayTimeHeatmapCell[] {
   const grid = new Map<string, number>();
   let maxTotal = 0;
-  
+
   // Build grid
   entries.forEach(entry => {
     const key = `${entry.dayOfWeek}-${entry.timeOfDay}`;
@@ -399,10 +399,10 @@ function aggregateDayTimeHeatmap(entries: V2ExpenseEntry[]): DayTimeHeatmapCell[
     grid.set(key, newTotal);
     maxTotal = Math.max(maxTotal, newTotal);
   });
-  
+
   // Create cells with normalized intensity
   const cells: DayTimeHeatmapCell[] = [];
-  
+
   (daysOfWeek as readonly string[]).forEach(day => {
     (timeOfDayOptions as readonly string[]).forEach(time => {
       const key = `${day}-${time}`;
@@ -415,7 +415,7 @@ function aggregateDayTimeHeatmap(entries: V2ExpenseEntry[]): DayTimeHeatmapCell[
       });
     });
   });
-  
+
   return cells;
 }
 
@@ -424,7 +424,7 @@ function aggregateDayTimeHeatmap(entries: V2ExpenseEntry[]): DayTimeHeatmapCell[
  */
 function findPeakSpending(heatmap: DayTimeHeatmapCell[]): { day: DayOfWeek; timeOfDay: TimeOfDay; total: number } | null {
   if (heatmap.length === 0) return null;
-  
+
   const peak = heatmap.reduce((max, cell) => cell.total > max.total ? cell : max, heatmap[0]);
   return peak.total > 0 ? { day: peak.day, timeOfDay: peak.timeOfDay, total: peak.total } : null;
 }
@@ -438,22 +438,22 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
       cache: 'no-store',
       headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
     });
-    
+
     if (!response.ok) return null;
-    
+
     const csvText = await response.text();
     if (!csvText.trim() || csvText.trim().split('\n').length < 2) return null;
-    
+
     const entries = parseV2CSV(csvText);
     if (entries.length === 0) return null;
-    
+
     const moodTotals = aggregateByMood(entries);
     const moodByMonth = aggregateMoodByMonth(entries);
     const dayTotals = aggregateByDayOfWeek(entries);
     const timeOfDayTotals = aggregateByTimeOfDay(entries);
     const heatmapData = aggregateDayTimeHeatmap(entries);
-    
-    // Reuse existing aggregateByCategory for V2
+
+    // Reuse existing aggregateByCategory and aggregateByMonth for V2
     const v2Entries = entries.map(e => ({
       month: e.month,
       date: e.date,
@@ -461,14 +461,15 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
       category: e.category,
     }));
     const categoryTotals = aggregateByCategory(v2Entries);
-    
+    const monthlyTotals = aggregateByMonth(v2Entries);
+
     const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
     const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
-    
+
     // Hero insights
     const topMood = moodTotals.length > 0 ? { mood: moodTotals[0].mood, percentage: moodTotals[0].percentage } : null;
     const peakSpendingTime = findPeakSpending(heatmapData);
-    
+
     return {
       entries,
       grandTotal: Math.round(grandTotal * 100) / 100,
@@ -479,6 +480,7 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
       timeOfDayTotals,
       heatmapData,
       categoryTotals,
+      monthlyTotals,
       topMood,
       peakSpendingTime,
     };
@@ -496,18 +498,18 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
  */
 function formatDateToMonth(dateStr: string): string {
   if (!dateStr) return '';
-  
+
   // Strip time component if present (e.g., "1/2/2026 6:50:48" -> "1/2/2026")
   const dateOnly = dateStr.split(' ')[0];
-  
+
   const parts = dateOnly.split('/');
   if (parts.length < 3) return '';
-  
+
   const monthIndex = parseInt(parts[0], 10) - 1;
   const year = parts[2];
-  
+
   if (monthIndex < 0 || monthIndex > 11) return '';
-  
+
   return `${MONTH_ORDER[monthIndex]} ${year}`;
 }
 
@@ -541,14 +543,14 @@ export function mergeV2DataSources(
 ): V2ExpenseEntry[] {
   const seen = new Set<string>();
   const merged: V2ExpenseEntry[] = [];
-  
+
   // Live entries take priority
   for (const entry of liveEntries) {
     const key = `${entry.date}-${entry.amount}-${entry.category}`;
     seen.add(key);
     merged.push(entry);
   }
-  
+
   // Add CSV entries not in live
   for (const entry of csvEntries) {
     const key = `${entry.date}-${entry.amount}-${entry.category}`;
@@ -556,7 +558,7 @@ export function mergeV2DataSources(
       merged.push(entry);
     }
   }
-  
+
   return merged;
 }
 
@@ -566,14 +568,14 @@ export function mergeV2DataSources(
  */
 export function processV2Entries(entries: V2ExpenseEntry[]): V2AnalyticsData | null {
   if (entries.length === 0) return null;
-  
+
   const moodTotals = aggregateByMood(entries);
   const moodByMonth = aggregateMoodByMonth(entries);
   const dayTotals = aggregateByDayOfWeek(entries);
   const timeOfDayTotals = aggregateByTimeOfDay(entries);
   const heatmapData = aggregateDayTimeHeatmap(entries);
-  
-  // Reuse existing aggregateByCategory for V2
+
+  // Reuse existing aggregateByCategory and aggregateByMonth for V2
   const v2Entries = entries.map(e => ({
     month: e.month,
     date: e.date,
@@ -581,14 +583,15 @@ export function processV2Entries(entries: V2ExpenseEntry[]): V2AnalyticsData | n
     category: e.category,
   }));
   const categoryTotals = aggregateByCategory(v2Entries);
-  
+  const monthlyTotals = aggregateByMonth(v2Entries);
+
   const grandTotal = entries.reduce((sum, e) => sum + e.amount, 0);
   const monthsWithData = new Set(entries.map(e => e.month.split(' ')[0]));
-  
+
   // Hero insights
   const topMood = moodTotals.length > 0 ? { mood: moodTotals[0].mood, percentage: moodTotals[0].percentage } : null;
   const peakSpendingTime = findPeakSpending(heatmapData);
-  
+
   return {
     entries,
     grandTotal: Math.round(grandTotal * 100) / 100,
@@ -599,6 +602,7 @@ export function processV2Entries(entries: V2ExpenseEntry[]): V2AnalyticsData | n
     timeOfDayTotals,
     heatmapData,
     categoryTotals,
+    monthlyTotals,
     topMood,
     peakSpendingTime,
   };

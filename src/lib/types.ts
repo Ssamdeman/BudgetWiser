@@ -93,7 +93,7 @@ export interface V2AnalyticsData {
   entries: V2ExpenseEntry[];
   grandTotal: number;
   monthCount: number;
-  
+
   // Aggregations
   moodTotals: MoodTotal[];
   moodByMonth: MoodByMonth[];
@@ -101,7 +101,8 @@ export interface V2AnalyticsData {
   timeOfDayTotals: TimeOfDayTotal[];
   heatmapData: DayTimeHeatmapCell[];
   categoryTotals: import('@/lib/csv-parser').CategoryTotal[];
-  
+  monthlyTotals: import('@/lib/csv-parser').MonthlyTotal[];
+
   // Hero insights
   topMood: { mood: Mood; percentage: number } | null;
   peakSpendingTime: { day: DayOfWeek; timeOfDay: TimeOfDay; total: number } | null;
