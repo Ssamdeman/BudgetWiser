@@ -125,6 +125,6 @@ Start the Genkit process:
 ## What's Next
 
 - [x] Password-protected subscription view
-- [ ] Subscription renewal alerts
-- [ ] Budget goals and tracking
+- [x] Subscription renewal alerts
+- [x] Budget goals and tracking
 - [ ] Export/share reports
