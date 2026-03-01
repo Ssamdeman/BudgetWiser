@@ -5,38 +5,38 @@ import { google } from 'googleapis';
 // Parse private key - handles various formats from env vars
 function parsePrivateKey(key: string | undefined): string {
   if (!key) return '';
-  
+
   // Replace literal \n with actual newlines
   let parsed = key.replace(/\\n/g, '\n');
-  
+
   // Also handle double-escaped newlines
   parsed = parsed.replace(/\\\\n/g, '\n');
-  
+
   return parsed;
 }
 
 // Initialize Google Sheets client
 async function getGoogleSheetsClient() {
   const privateKey = parsePrivateKey(process.env.GOOGLE_PRIVATE_KEY);
-  
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: privateKey,
-    },
+
+  const auth = new google.auth.JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    key: privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 
-  const client = await auth.getClient();
+  // Keep compatibility just in case by relying on implicit JWT loading, or forcing authorize() if getClient doesn't exist.
+  // Wait, Sheets API expects an auth client. The JWT object IS an auth client.
+  const client = auth;
   const sheets = google.sheets({ version: 'v4', auth: client as any });
-  
+
   return sheets;
 }
 
 // ✅ MODIFICATION: Accept three individual arguments
 export async function appendExpenseToSheet(
-  amount: number, 
-  category: string, 
+  amount: number,
+  category: string,
   purchaseType: string
 ) {
   try {
