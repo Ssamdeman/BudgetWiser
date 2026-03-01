@@ -21,6 +21,7 @@ import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 // Features
 import { CurrentMonthView } from './current-month-view';
 import { PreviousMonthView } from './previous-month-view';
+import { ForecastView } from './forecast-view';
 
 // Data & Types
 import { fetchAndParseCSV, type AnalyticsData } from '@/lib/csv-parser';
@@ -171,9 +172,10 @@ export function AnalysisView() {
           </AccordionTrigger>
           <AccordionContent className="px-5 pb-5">
             <Tabs defaultValue="current" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="current">Current Month</TabsTrigger>
                 <TabsTrigger value="previous">Previous Month</TabsTrigger>
+                <TabsTrigger value="forecast">Forecast</TabsTrigger>
               </TabsList>
 
               <TabsContent value="current">
@@ -182,6 +184,10 @@ export function AnalysisView() {
 
               <TabsContent value="previous">
                 <PreviousMonthView />
+              </TabsContent>
+
+              <TabsContent value="forecast">
+                <ForecastView />
               </TabsContent>
             </Tabs>
           </AccordionContent>

@@ -107,6 +107,34 @@ export async function fetchPreviousMonthExpenses(): Promise<V2ExpenseEntry[]> {
 }
 
 /**
+ * Interface mapping to predictie stats from Python
+ */
+export interface ForecastMetrics {
+  success: boolean;
+  historical_monthly_average: number;
+  current_spend: number;
+  expected_spend_by_now: number;
+  pace_difference: number;
+  is_overspending: boolean;
+  end_of_month_estimate: number;
+  category_forecasts: { category: string; average: number }[];
+  top_mood: { mood: string; percentage: number };
+}
+
+/**
+ * Runs the Python predictive module and returns the parsed JSON explicitly.
+ */
+export async function fetchForecastMetrics(): Promise<ForecastMetrics | null> {
+  try {
+    const { stdout } = await execPromise('python public/forecast_metrics.py');
+    return JSON.parse(stdout.trim()) as ForecastMetrics;
+  } catch (error) {
+    console.error('Error executing python forecast script:', error);
+    return null;
+  }
+}
+
+/**
  * Fetches ALL expenses from the live Google Sheet (for merging with CSV)
  */
 export async function fetchAllLiveExpenses(): Promise<V2ExpenseEntry[]> {
@@ -125,6 +153,10 @@ export async function fetchAllLiveExpenses(): Promise<V2ExpenseEntry[]> {
 
 import fs from 'fs/promises';
 import path from 'path';
+import { exec } from 'child_process';
+import util from 'util';
+
+const execPromise = util.promisify(exec);
 import { parseV2CSV, processV2Entries } from "@/lib/csv-parser";
 import type { V2AnalyticsData } from "@/lib/types";
 
