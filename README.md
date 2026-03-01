@@ -103,6 +103,25 @@ No cloud sync magic. No AI predictions. Just clean data flow you control.
 
 ---
 
+## Commands
+
+Start the development server:
+```powershell
+.\run.ps1 dev
+```
+
+Append a new month's CSV data to the master file:
+```powershell
+.\run.ps1 add-data -File public\raw-data\Feb-2026.csv
+```
+
+Start the Genkit process:
+```powershell
+.\run.ps1 genkit
+```
+
+---
+
 ## What's Next
 
 - [x] Password-protected subscription view
