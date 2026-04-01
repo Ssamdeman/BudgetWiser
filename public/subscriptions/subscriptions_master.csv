@@ -3,6 +3,10 @@ Name,Status,Category,Cost,Cycle,BillDate,Bank,Notes
 iCloud,Active,Tools,2.99,Monthly-Start,1,Apple Card,Updated from $1.99 Nov 2025
 TriCare Reserve,Canceled,Health,53.80,Monthly-Start,5,Navy,
 Claude AI,Active,Work,21.55,Monthly-Start,5,Navy,
+
+Perplexity Pro,Active,Work,0,Yearly,Monthly-Start,Navy,Free until 2026-11-16 
+
+
 YouTube Premium,Active,Entertainment,8.82,Monthly-Mid,13,Navy,
 iPhone 15,Done,Necessary,37.45,Monthly-End,30,Apple Card,
 Wifi 11 Gorham,Active,Housing,19,Monthly-Mid,14,Navy,

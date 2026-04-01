@@ -95,11 +95,19 @@ No cloud sync magic. No AI predictions. Just clean data flow you control.
 2. Share with Service Account email (Editor access)
 3. Add Sheet ID to Vercel environment variables
 
-### Monthly Data Flow
+### Monthly Data Flow (V2 Insights)
 
-- Export monthly data from Google Sheet
-- Run consolidation script to update master CSV
-- Dashboard reflects changes on refresh
+To update the 2026 master financial data with a new month:
+
+1.  **Export** your monthly data from Google Sheets as a CSV.
+2.  **Save** the CSV file into the `public/raw-data/` directory (e.g., `Mar-2026.csv`).
+3.  **Run** the consolidation command in your terminal:
+    ```powershell
+    .\run.ps1 add-data -File public\raw-data\Mar-2026.csv
+    ```
+
+> [!TIP]
+> The consolidation script is "smart"—if you run it again with the same file, it will **replace** that month's data in the master file rather than duplicating it. This prevents double-entries while allowing you to update a month if you add more data later.
 
 ---
 
@@ -110,9 +118,9 @@ Start the development server:
 .\run.ps1 dev
 ```
 
-Append a new month's CSV data to the master file:
+Append or update a month's CSV data in the master file:
 ```powershell
-.\run.ps1 add-data -File public\raw-data\Feb-2026.csv
+.\run.ps1 add-data -File public\raw-data\Mar-2026.csv
 ```
 
 Start the Genkit process:
