@@ -8,9 +8,9 @@ import { Badge } from './ui/badge';
 
 // V1 Charts
 import { MonthlySpendingChart } from './charts/monthly-spending-chart';
+
+// Shared Charts
 import { CategoryBreakdownChart } from './charts/category-breakdown-chart';
-import { CategoryByMonthChart } from './charts/category-by-month-chart';
-import { MonthOverMonthChart } from './charts/month-over-month-chart';
 
 // V2 Charts
 import { MonthlyMoodChart } from './charts/monthly-mood-chart';
@@ -377,59 +377,6 @@ export function AnalysisView() {
                   </CardContent>
                 </Card>
 
-                {/* Category Breakdown Chart */}
-                <Card className="border-border/50 hover:border-border transition-colors">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <PieChart className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Category Breakdown</CardTitle>
-                        <CardDescription className="text-xs">Where your money goes</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <CategoryBreakdownChart data={v1Data.categoryTotals} />
-                  </CardContent>
-                </Card>
-
-                {/* Category by Month Chart */}
-                <Card className="border-border/50 hover:border-border transition-colors">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <BarChart3 className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Category by Month</CardTitle>
-                        <CardDescription className="text-xs">See which categories dominate each month</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <CategoryByMonthChart data={v1Data.categoryByMonth} categories={v1Data.allCategories} />
-                  </CardContent>
-                </Card>
-
-                {/* Month-over-Month Change Chart */}
-                <Card className="border-border/50 hover:border-border transition-colors">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <ArrowUpDown className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Month-over-Month</CardTitle>
-                        <CardDescription className="text-xs">How your spending changes from month to month</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <MonthOverMonthChart data={v1Data.monthlyChanges} />
-                  </CardContent>
-                </Card>
               </div>
             </AccordionContent>
           </AccordionItem>
