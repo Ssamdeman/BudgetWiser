@@ -13,10 +13,7 @@ import { MonthlySpendingChart } from './charts/monthly-spending-chart';
 import { CategoryBreakdownChart } from './charts/category-breakdown-chart';
 
 // V2 Charts
-import { MonthlyMoodChart } from './charts/monthly-mood-chart';
 import { MoodAnalysisChart } from './charts/mood-analysis-chart';
-import { SpendingHeatmap } from './charts/spending-heatmap';
-import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 
 // Features
 import { CurrentMonthView } from './current-month-view';
@@ -244,25 +241,25 @@ export function AnalysisView() {
                   </div>
                 </div>
 
-                {/* Chart 1: Monthly Spending by Mood */}
+                {/* Monthly Spending Chart (V2) */}
                 <Card className="border-border/50 hover:border-border transition-colors">
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-primary/10">
-                        <Brain className="w-4 h-4 text-primary" />
+                        <TrendingUp className="w-4 h-4 text-primary" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">Monthly Spending by Mood</CardTitle>
-                        <CardDescription className="text-xs">How your spending moods shift over time</CardDescription>
+                        <CardTitle className="text-lg">Monthly Spending</CardTitle>
+                        <CardDescription className="text-xs">Your spending trends throughout 2026</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <MonthlyMoodChart data={v2Data.moodByMonth} />
+                    <MonthlySpendingChart data={v2Data.monthlyTotals} />
                   </CardContent>
                 </Card>
 
-                {/* Chart 2: Category Breakdown (Reused) */}
+                {/* Category Breakdown (Reused) */}
                 <Card className="border-border/50 hover:border-border transition-colors">
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -280,7 +277,7 @@ export function AnalysisView() {
                   </CardContent>
                 </Card>
 
-                {/* Chart 3: Mood Analysis */}
+                {/* Mood Analysis */}
                 <Card className="border-border/50 hover:border-border transition-colors">
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -295,42 +292,6 @@ export function AnalysisView() {
                   </CardHeader>
                   <CardContent className="pt-0">
                     <MoodAnalysisChart data={v2Data.moodTotals} />
-                  </CardContent>
-                </Card>
-
-                {/* Chart 4: Spending Heatmap */}
-                <Card className="border-border/50 hover:border-border transition-colors">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <Grid3X3 className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Spending Heatmap</CardTitle>
-                        <CardDescription className="text-xs">When you spend the most (Day × Time)</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <SpendingHeatmap data={v2Data.heatmapData} />
-                  </CardContent>
-                </Card>
-
-                {/* Chart 5: Day & Time Breakdown */}
-                <Card className="border-border/50 hover:border-border transition-colors">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <Clock className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Day & Time Breakdown</CardTitle>
-                        <CardDescription className="text-xs">Spending patterns by day of week and time of day</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <DayTimeBarsChart dayData={v2Data.dayTotals} timeData={v2Data.timeOfDayTotals} />
                   </CardContent>
                 </Card>
               </div>
