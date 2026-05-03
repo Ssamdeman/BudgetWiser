@@ -444,7 +444,8 @@ export async function fetchAndParseV2CSV(): Promise<V2AnalyticsData | null> {
     const csvText = await response.text();
     if (!csvText.trim() || csvText.trim().split('\n').length < 2) return null;
 
-    const entries = parseV2CSV(csvText);
+    const allEntries = parseV2CSV(csvText);
+    const entries = allEntries.filter(e => e.month.endsWith(' 2026'));
     if (entries.length === 0) return null;
 
     const moodTotals = aggregateByMood(entries);
@@ -566,7 +567,8 @@ export function mergeV2DataSources(
  * Processes V2ExpenseEntry[] into full V2AnalyticsData
  * Extracted from fetchAndParseV2CSV for reuse with live data
  */
-export function processV2Entries(entries: V2ExpenseEntry[]): V2AnalyticsData | null {
+export function processV2Entries(rawEntries: V2ExpenseEntry[]): V2AnalyticsData | null {
+  const entries = rawEntries.filter(e => e.month.endsWith(' 2026'));
   if (entries.length === 0) return null;
 
   const moodTotals = aggregateByMood(entries);
