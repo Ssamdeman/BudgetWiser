@@ -121,15 +121,54 @@ export interface ForecastMetrics {
   top_mood: { mood: string; percentage: number };
 }
 
+import fs from 'fs/promises';
+import path from 'path';
+import { parseV2CSV, processV2Entries } from "@/lib/csv-parser";
+import type { V2AnalyticsData } from "@/lib/types";
+
+import {
+  computeHistoricalAverageBaseline,
+  computePaceCheck,
+  computeEndOfMonthEstimate,
+  computeTopCategoryBaselines,
+  computeTopMood
+} from '@/lib/forecast';
+
 /**
- * Runs the Python predictive module and returns the parsed JSON explicitly.
+ * Native TypeScript forecasting module
  */
 export async function fetchForecastMetrics(): Promise<ForecastMetrics | null> {
   try {
-    const { stdout } = await execPromise('python public/forecast_metrics.py');
-    return JSON.parse(stdout.trim()) as ForecastMetrics;
+    const [csvText, currEntries] = await Promise.all([
+      fs.readFile(path.join(process.cwd(), 'public', 'V2_master_finances-2026.csv'), 'utf-8').catch(() => ''),
+      fetchCurrentMonthExpenses()
+    ]);
+
+    const allPastEntries = csvText.trim() ? parseV2CSV(csvText) : [];
+    const pastEntries = allPastEntries.filter(e => e.month.endsWith(' 2026'));
+
+    const currentSpend = currEntries.reduce((sum, e) => sum + e.amount, 0);
+    const today = new Date();
+
+    const { averageMonthlyBaseline, completedMonthsCount } = computeHistoricalAverageBaseline(pastEntries);
+    const paceCheck = computePaceCheck(currentSpend, averageMonthlyBaseline, today);
+    const endOfMonthEstimate = computeEndOfMonthEstimate(currentSpend, today);
+    const topBaselines = computeTopCategoryBaselines(pastEntries, completedMonthsCount, 3);
+    const topMood = computeTopMood(pastEntries);
+
+    return {
+      success: true,
+      historical_monthly_average: Math.round(averageMonthlyBaseline * 100) / 100,
+      current_spend: Math.round(currentSpend * 100) / 100,
+      expected_spend_by_now: Math.round(paceCheck.expectedByNow * 100) / 100,
+      pace_difference: Math.round(paceCheck.paceDifference * 100) / 100,
+      is_overspending: paceCheck.paceDifference > 0,
+      end_of_month_estimate: Math.round(endOfMonthEstimate * 100) / 100,
+      category_forecasts: topBaselines.map(c => ({ category: c.category, average: Math.round(c.average * 100) / 100 })),
+      top_mood: topMood,
+    };
   } catch (error) {
-    console.error('Error executing python forecast script:', error);
+    console.error('Error in fetchForecastMetrics:', error);
     return null;
   }
 }
@@ -151,14 +190,6 @@ export async function fetchAllLiveExpenses(): Promise<V2ExpenseEntry[]> {
 // V2 CSV DATA SERVER ACTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
-import fs from 'fs/promises';
-import path from 'path';
-import { exec } from 'child_process';
-import util from 'util';
-
-const execPromise = util.promisify(exec);
-import { parseV2CSV, processV2Entries } from "@/lib/csv-parser";
-import type { V2AnalyticsData } from "@/lib/types";
 
 /**
  * Fetches and parses the V2 CSV directly from the filesystem (server-side)
