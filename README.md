@@ -89,22 +89,30 @@ No cloud sync magic. No AI predictions. Just clean data flow you control.
 
 ## Setup
 
-### Google Sheet Integration
+### Google Sheet Integration (One-Time Setup)
 
-1. Create a Google Sheet
-2. Share with Service Account email (Editor access)
-3. Add Sheet ID to Vercel environment variables
+You only need to configure the Google Sheet once. **The app reuses a single, persistent Google Sheet forever.** The Sheet ID never changes, so Vercel environment variables are set once and never touched again.
 
-### Monthly Data Flow (V2 Insights)
+1. Create a Google Sheet.
+2. Share it with your Service Account email (Editor access).
+3. Add the Sheet ID to your Vercel environment variables.
 
-To update the 2026 master financial data with a new month:
+### Monthly Rollover Ritual
 
-1.  **Export** your monthly data from Google Sheets as a CSV.
-2.  **Save** the CSV file into the `public/raw-data/` directory (e.g., `Mar-2026.csv`).
-3.  **Run** the consolidation command in your terminal:
+Because the dashboard automatically filters the live sheet to show only the current calendar month, stale rows don't break anything. However, to keep your insights accurate and the sheet clean, follow this rollover process at the end of each month (export **one month at a time**, never batched):
+
+1.  **Export** the completed month's rows from the Google Sheet as a CSV.
+2.  **Save** the CSV file into the `public/raw-data/` directory (e.g., `Apr-2026.csv`).
+3.  **Run** the consolidation command in your terminal to fold it into the V2 master:
     ```powershell
-    .\run.ps1 add-data -File public\raw-data\Mar-2026.csv
+    .\run.ps1 add-data -File public\raw-data\Apr-2026.csv
     ```
+4.  **Archive** the exported rows into your personal master tracker (a separate sheet, unrelated to the app).
+5.  **Clear** the values in columns C, D, and E for the consolidated month's rows in the live sheet.
+
+> [!WARNING]
+> **NEVER DELETE THE ROWS in your live Google Sheet.** Only clear the values in columns C, D, and E. 
+> Columns F through I contain hidden array formulas that auto-stamp the Time, Day, Week, and Date for new entries. Deleting the rows will destroy these formulas and silently break new expense logging.
 
 > [!TIP]
 > The consolidation script is "smart"—if you run it again with the same file, it will **replace** that month's data in the master file rather than duplicating it. This prevents double-entries while allowing you to update a month if you add more data later.
