@@ -4,7 +4,6 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
-import { SubscriptionPasswordGate } from './subscription-password-gate';
 import { fetchSubscriptions } from '@/lib/subscription-parser';
 import type { SubscriptionsData, Subscription, SubscriptionStatus } from '@/lib/types';
 import { 
@@ -14,9 +13,6 @@ import {
   Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Auto-lock timer duration (10 minutes in ms)
-const AUTO_LOCK_DURATION = 10 * 60 * 1000;
 
 // Status badge styles
 const statusConfig: Record<SubscriptionStatus, { bg: string; text: string; icon: React.ReactNode }> = {
@@ -228,52 +224,32 @@ function SubscriptionContent({ data }: { data: SubscriptionsData }) {
 }
 
 export function SubscriptionsView() {
-  // Auth state - always starts locked
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Data state - only fetched after unlock
+  // Data state - fetched on mount
   const [data, setData] = useState<SubscriptionsData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Clear timer on unmount
   useEffect(() => {
+    let active = true;
+    fetchSubscriptions()
+      .then((res) => {
+        if (active) {
+          setData(res);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          setError(err.message);
+          setLoading(false);
+        }
+      });
     return () => {
-      if (lockTimerRef.current) {
-        clearTimeout(lockTimerRef.current);
-      }
+      active = false;
     };
   }, []);
 
-  // Handle successful unlock
-  const handleUnlock = useCallback(() => {
-    setIsUnlocked(true);
-    setLoading(true);
-    setError(null);
-    
-    // Fetch data after unlock
-    fetchSubscriptions()
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-    
-    // Start 10-minute auto-lock timer (silent)
-    if (lockTimerRef.current) {
-      clearTimeout(lockTimerRef.current);
-    }
-    lockTimerRef.current = setTimeout(() => {
-      setIsUnlocked(false);
-      setData(null);
-    }, AUTO_LOCK_DURATION);
-  }, []);
-
-  // Show password gate when locked
-  if (!isUnlocked) {
-    return <SubscriptionPasswordGate onUnlock={handleUnlock} />;
-  }
-
-  // Loading state (after unlock)
+  // Loading state
   if (loading) {
     return (
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
