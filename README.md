@@ -136,11 +136,3 @@ Start the Genkit process:
 .\run.ps1 genkit
 ```
 
----
-
-## What's Next
-
-- [x] Password-protected subscription view
-- [x] Subscription renewal alerts
-- [x] Budget goals and tracking
-- [ ] Export/share reports

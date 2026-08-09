@@ -532,3 +532,83 @@ Jun 2026,2026-06-30 19:35:37,15.43,Cooking/Groceries,Social,Evening,Tuesday,27
 Jun 2026,2026-06-30 19:35:48,13.15,Cooking/Groceries,Social,Evening,Tuesday,27
 Jun 2026,2026-06-30 19:35:58,7.86,Cooking/Groceries,Social,Evening,Tuesday,27
 Jun 2026,2026-06-30 19:36:10,49.52,Transportation,Social,Evening,Tuesday,27
+Jul 2026,2026-07-04 09:59:57,23.0,Transportation,Social,Morning,Saturday,27
+Jul 2026,2026-07-04 10:00:13,1.07,Eating Out,Impulse,Morning,Saturday,27
+Jul 2026,2026-07-04 10:00:36,3.49,Eating Out,Impulse,Morning,Saturday,27
+Jul 2026,2026-07-04 10:00:56,6.72,Eating Out,Impulse,Morning,Saturday,27
+Jul 2026,2026-07-04 10:01:38,35.58,Transportation,Necessary,Morning,Saturday,27
+Jul 2026,2026-07-04 10:01:53,11.32,Eating Out,Impulse,Morning,Saturday,27
+Jul 2026,2026-07-04 10:04:24,4.76,Eating Out,Necessary,Morning,Saturday,27
+Jul 2026,2026-07-04 16:17:19,55.95,Other,Social,Afternoon,Saturday,27
+Jul 2026,2026-07-04 16:17:30,3.24,Eating Out,Impulse,Afternoon,Saturday,27
+Jul 2026,2026-07-04 16:17:38,12.0,Transportation,Necessary,Afternoon,Saturday,27
+Jul 2026,2026-07-04 16:18:16,15.46,Eating Out,Impulse,Afternoon,Saturday,27
+Jul 2026,2026-07-06 10:04:47,99.0,Other,Social,Morning,Monday,28
+Jul 2026,2026-07-08 07:42:21,448.0,Transportation,Necessary,Morning,Wednesday,28
+Jul 2026,2026-07-08 22:19:00,31.79,Clothing,Necessary,Night,Wednesday,28
+Jul 2026,2026-07-08 22:25:35,10.38,Clothing,Necessary,Night,Wednesday,28
+Jul 2026,2026-07-08 22:25:54,168.18,Clothing,Necessary,Night,Wednesday,28
+Jul 2026,2026-07-08 22:26:09,5.25,Clothing,Necessary,Night,Wednesday,28
+Jul 2026,2026-07-08 23:06:57,59.69,Beauty/Grooming,Necessary,Night,Wednesday,28
+Jul 2026,2026-07-09 12:48:47,37.14,Clothing,Necessary,Afternoon,Thursday,28
+Jul 2026,2026-07-09 14:43:36,44.47,Cooking/Groceries,Necessary,Afternoon,Thursday,28
+Jul 2026,2026-07-10 11:08:20,37.14,Clothing,Necessary,Morning,Friday,28
+Jul 2026,2026-07-10 11:09:00,26.75,Projects,Impulse,Morning,Friday,28
+Jul 2026,2026-07-10 11:09:11,44.47,Cooking/Groceries,Necessary,Morning,Friday,28
+Jul 2026,2026-07-10 11:09:47,12.41,Projects,Necessary,Morning,Friday,28
+Jul 2026,2026-07-10 11:10:35,120.93,Projects,Planned,Morning,Friday,28
+Jul 2026,2026-07-10 11:10:57,29.88,Projects,Planned,Morning,Friday,28
+Jul 2026,2026-07-10 11:11:15,6.48,Projects,Planned,Morning,Friday,28
+Jul 2026,2026-07-10 11:11:38,5.0,Cooking/Groceries,Necessary,Morning,Friday,28
+Jul 2026,2026-07-10 11:11:55,20.05,Beauty/Grooming,Necessary,Morning,Friday,28
+Jul 2026,2026-07-10 15:43:37,14.56,Cooking/Groceries,Impulse,Afternoon,Friday,28
+Jul 2026,2026-07-12 09:43:21,30.17,Cooking/Groceries,Impulse,Morning,Sunday,29
+Jul 2026,2026-07-12 09:43:46,35.63,Utilities,Necessary,Morning,Sunday,29
+Jul 2026,2026-07-12 09:43:55,40.0,Transportation,Necessary,Morning,Sunday,29
+Jul 2026,2026-07-12 09:44:07,67.48,Eating Out,Impulse,Morning,Sunday,29
+Jul 2026,2026-07-12 09:44:59,4.88,Eating Out,Necessary,Morning,Sunday,29
+Jul 2026,2026-07-13 13:09:33,2.79,Cooking/Groceries,Impulse,Afternoon,Monday,29
+Jul 2026,2026-07-13 13:09:46,11.45,Eating Out,Necessary,Afternoon,Monday,29
+Jul 2026,2026-07-13 13:10:20,6.18,Eating Out,Necessary,Afternoon,Monday,29
+Jul 2026,2026-07-15 17:20:31,24.93,Cooking/Groceries,Necessary,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:21:03,49.01,Utilities,Necessary,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:21:13,6.48,Eating Out,Impulse,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:21:40,12.61,Utilities,Necessary,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:21:55,14.63,Projects,Necessary,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:22:16,1.39,Eating Out,Impulse,Evening,Wednesday,29
+Jul 2026,2026-07-15 17:22:29,1.99,Eating Out,Impulse,Evening,Wednesday,29
+Jul 2026,2026-07-16 22:02:27,6.22,Eating Out,Impulse,Night,Thursday,29
+Jul 2026,2026-07-16 22:02:55,29.64,Cooking/Groceries,Impulse,Night,Thursday,29
+Jul 2026,2026-07-16 22:03:15,28.0,Beauty/Grooming,Necessary,Night,Thursday,29
+Jul 2026,2026-07-16 22:03:41,230.79,Projects,Necessary,Night,Thursday,29
+Jul 2026,2026-07-16 22:04:00,30.25,Transportation,Necessary,Night,Thursday,29
+Jul 2026,2026-07-16 22:04:44,4.12,Cooking/Groceries,Necessary,Night,Thursday,29
+Jul 2026,2026-07-16 22:24:52,50.0,Projects,Necessary,Night,Thursday,29
+Jul 2026,2026-07-17 08:54:26,4.12,Eating Out,Impulse,Morning,Friday,29
+Jul 2026,2026-07-23 08:05:33,200.0,Cooking/Groceries,Necessary,Morning,Thursday,30
+Jul 2026,2026-07-23 08:05:58,300.0,Other,Necessary,Morning,Thursday,30
+Jul 2026,2026-07-23 08:06:10,2.49,Eating Out,Impulse,Morning,Thursday,30
+Jul 2026,2026-07-24 09:07:13,12.58,Eating Out,Impulse,Morning,Friday,30
+Jul 2026,2026-07-24 09:07:23,31.02,Transportation,Necessary,Morning,Friday,30
+Jul 2026,2026-07-24 12:45:34,10.95,Clothing,Necessary,Afternoon,Friday,30
+Jul 2026,2026-07-24 20:49:27,19.24,Beauty/Grooming,Necessary,Evening,Friday,30
+Jul 2026,2026-07-24 22:06:12,45.95,Eating Out,Social,Night,Friday,30
+Jul 2026,2026-07-25 16:13:52,40.92,Eating Out,Social,Afternoon,Saturday,30
+Jul 2026,2026-07-26 12:07:28,34.04,Eating Out,Social,Afternoon,Sunday,31
+Jul 2026,2026-07-26 22:23:14,39.39,Eating Out,Social,Night,Sunday,31
+Jul 2026,2026-07-26 22:23:27,13.93,Eating Out,Necessary,Night,Sunday,31
+Jul 2026,2026-07-26 22:23:50,66.63,Projects,Necessary,Night,Sunday,31
+Jul 2026,2026-07-26 22:24:00,35.0,Transportation,Necessary,Night,Sunday,31
+Jul 2026,2026-07-26 22:24:11,6.71,Transportation,Necessary,Night,Sunday,31
+Jul 2026,2026-07-26 22:24:22,23.33,Cooking/Groceries,Necessary,Night,Sunday,31
+Jul 2026,2026-07-27 22:08:33,142.9,Cooking/Groceries,Necessary,Night,Monday,31
+Jul 2026,2026-07-29 08:17:44,16.18,Eating Out,Social,Morning,Wednesday,31
+Jul 2026,2026-07-29 19:28:56,8.83,Eating Out,Impulse,Evening,Wednesday,31
+Jul 2026,2026-07-29 19:29:20,6.99,Eating Out,Social,Evening,Wednesday,31
+Jul 2026,2026-07-29 19:29:35,2.39,Eating Out,Impulse,Evening,Wednesday,31
+Jul 2026,2026-07-29 19:29:57,14.88,Cooking/Groceries,Social,Evening,Wednesday,31
+Jul 2026,2026-07-29 19:30:17,29.46,Eating Out,Impulse,Evening,Wednesday,31
+Jul 2026,2026-07-31 12:07:35,2.49,Eating Out,Impulse,Afternoon,Friday,31
+Jul 2026,2026-07-31 12:07:49,104.39,Eating Out,Social,Afternoon,Friday,31
+Jul 2026,2026-07-31 12:08:18,16.19,Eating Out,Social,Afternoon,Friday,31
+Jul 2026,2026-07-31 21:59:56,16.19,Eating Out,Necessary,Evening,Friday,31
