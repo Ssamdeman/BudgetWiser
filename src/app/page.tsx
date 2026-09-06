@@ -1,6 +1,6 @@
 "use client";
 
-import { LogExpenseForm } from '@/components/log-expense-form';
+import { LogHub } from '@/components/log-hub';
 import { AnalysisView } from '@/components/analysis-view';
 import { SubscriptionsView } from '@/components/subscriptions-view';
 import { SwipeableTabs } from '@/components/swipeable-tabs';
@@ -9,7 +9,7 @@ export default function Home() {
   const tabs = [
     {
       name: 'Data',
-      content: <LogExpenseForm />,
+      content: <LogHub />,
     },
     {
       name: 'Analysis',

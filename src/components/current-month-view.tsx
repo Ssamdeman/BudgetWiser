@@ -11,9 +11,9 @@ import { SpendingHeatmap } from './charts/spending-heatmap';
 import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 
 // Server Actions & Data
-import { fetchCurrentMonthExpenses } from '@/app/actions';
+import { fetchCurrentMonthExpenses, fetchCurrentMonthIncome } from '@/app/actions';
 import { processV2Entries } from '@/lib/csv-parser';
-import type { V2AnalyticsData, V2ExpenseEntry } from '@/lib/types';
+import type { V2AnalyticsData, V2ExpenseEntry, IncomeMonthData } from '@/lib/types';
 
 // Icons
 import { 
@@ -22,11 +22,14 @@ import {
   BarChart3, 
   Grid3X3, 
   Clock,
-  AlertCircle
+  AlertCircle,
+  ArrowDownRight,
+  ArrowUpRight
 } from 'lucide-react';
 
 export function CurrentMonthView() {
   const [data, setData] = useState<V2AnalyticsData | null>(null);
+  const [incomeData, setIncomeData] = useState<IncomeMonthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -34,9 +37,13 @@ export function CurrentMonthView() {
   useEffect(() => {
     startTransition(async () => {
       try {
-        const entries: V2ExpenseEntry[] = await fetchCurrentMonthExpenses();
+        const [entries, income] = await Promise.all([
+          fetchCurrentMonthExpenses(),
+          fetchCurrentMonthIncome(),
+        ]);
         const processed = processV2Entries(entries);
         setData(processed);
+        setIncomeData(income);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
@@ -63,37 +70,60 @@ export function CurrentMonthView() {
     );
   }
 
-  if (!data || data.entries.length === 0) {
+  const hasExpenses = data && data.entries.length > 0;
+  const hasIncome = incomeData && incomeData.totalIncome > 0;
+
+  if (!hasExpenses && !hasIncome) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
         <Clock className="w-8 h-8" />
-        <p className="text-sm">No expenses logged this month yet.</p>
-        <p className="text-xs">Log your first expense to see it appear here!</p>
+        <p className="text-sm">No activity logged this month yet.</p>
+        <p className="text-xs">Log an expense or income to see it appear here!</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-5 pt-2">
-      {/* Mini Hero - Current Month Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-1">
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Total</p>
-          <p className="text-2xl font-bold text-primary">
-            ${data.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+      {/* Mini Hero - Current Month Summary: Money Out & Money In */}
+      <div className="grid grid-cols-2 gap-3 px-1">
+        {/* Money Out */}
+        <div className="p-4 rounded-2xl bg-card border border-border/70 shadow-sm flex flex-col items-center justify-center text-center">
+          <p className="text-xs uppercase tracking-wider font-semibold text-rose-500 mb-1 flex items-center gap-1.5">
+            <ArrowDownRight className="w-4 h-4" />
+            Total Spent
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            ${(data?.grandTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {data?.entries.length || 0} {(data?.entries.length || 0) === 1 ? 'expense' : 'expenses'}
           </p>
         </div>
-        {data.topMood && (
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Top Mood</p>
-            <p className="text-lg font-semibold">{data.topMood.mood}</p>
-          </div>
-        )}
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Entries</p>
-          <p className="text-lg font-semibold">{data.entries.length}</p>
+
+        {/* Money In */}
+        <div className="p-4 rounded-2xl bg-card border border-border/70 shadow-sm flex flex-col items-center justify-center text-center">
+          <p className="text-xs uppercase tracking-wider font-semibold text-emerald-500 mb-1 flex items-center gap-1.5">
+            <ArrowUpRight className="w-4 h-4" />
+            Total Income
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            ${(incomeData?.totalIncome || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {incomeData?.entriesCount || 0} {(incomeData?.entriesCount || 0) === 1 ? 'payment' : 'payments'}
+          </p>
         </div>
       </div>
+
+      {!hasExpenses && hasIncome && (
+        <div className="py-6 text-center text-muted-foreground text-xs">
+          No expenses logged yet this month. Tap the Income tab above to view your source breakdown.
+        </div>
+      )}
+
+      {hasExpenses && data && (
+        <>
 
       {/* Chart 1: Monthly Spending by Mood */}
       <Card className="border-border/50 hover:border-border transition-colors">
@@ -184,6 +214,8 @@ export function CurrentMonthView() {
           <DayTimeBarsChart dayData={data.dayTotals} timeData={data.timeOfDayTotals} />
         </CardContent>
       </Card>
+      </>
+      )}
     </div>
   );
 }
