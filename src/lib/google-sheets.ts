@@ -228,4 +228,30 @@ export async function fetchLiveHoldingsSheetData(): Promise<string[][]> {
     throw error;
   }
 }
+
+/**
+ * Fetches all subscriptions from the 'Subscriptions' tab
+ * Reads columns A:I (Name, Status, Category, Cost, Cycle, Bill day, Bank, Trial Ends, Notes)
+ * Starting from row 2 (skipping headers in row 1)
+ */
+export async function fetchLiveSubscriptionsSheetData(): Promise<string[][]> {
+  try {
+    const sheets = await getGoogleSheetsClient();
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+    if (!spreadsheetId) {
+      throw new Error('GOOGLE_SHEET_ID is not defined');
+    }
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Subscriptions!A2:J',
+    });
+
+    return response.data.values || [];
+  } catch (error) {
+    console.error('❌ Error fetching live subscriptions sheet data:', error);
+    throw error;
+  }
+}
 

@@ -234,11 +234,36 @@ export interface V2AnalyticsData {
 export const subscriptionStatuses = ["Active", "Canceled", "Done"] as const;
 export type SubscriptionStatus = typeof subscriptionStatuses[number];
 
-export const subscriptionCycles = ["Monthly-Start", "Monthly-Mid", "Monthly-End", "Yearly"] as const;
+export const subscriptionCycles = ["Monthly", "Yearly"] as const;
 export type SubscriptionCycle = typeof subscriptionCycles[number];
 
-export const bankAccounts = ["Navy", "Apple Card", "Santander", "Capital One"] as const;
-export type BankAccount = typeof bankAccounts[number];
+export interface SkippedSubscriptionRow {
+  rowNumber: number;
+  name?: string;
+  field?: string;
+  offendingValue?: string;
+  reason: string;
+}
+
+export interface FlaggedSubscriptionField {
+  rowNumber: number;
+  name: string;
+  field: 'Bill Day' | 'Trial Ends' | 'Ends';
+  offendingValue?: string;
+  reason: string;
+}
+
+export interface EndingSoonItem {
+  name: string;
+  category: string;
+  cost: number;
+  cycle: SubscriptionCycle;
+  bank?: string;
+  type: 'trial_ends' | 'commitment_ends';
+  dateStr: string;
+  daysRemaining: number;
+  notes?: string;
+}
 
 export interface Subscription {
   name: string;
@@ -247,18 +272,25 @@ export interface Subscription {
   cost: number;
   cycle: SubscriptionCycle;
   billDate?: number;
-  bank?: BankAccount;
+  bank?: string;
+  trialEnds?: string;
   notes?: string;
+  ends?: string;
 }
 
 export interface SubscriptionsData {
   subscriptions: Subscription[];
-  monthlyTotal: number;      // Sum of Active monthly costs
-  yearlyTotal: number;       // (monthlyTotal × 12) + yearly costs
+  committedThisMonth: number;   // Sum of Active monthly subscriptions where Ends is blank or in the future
+  yearlyItems: Subscription[];  // Active yearly items listed individually with cost and due date
+  endingSoon: EndingSoonItem[];  // Items with Ends or Trial Ends within next 60 days
   counts: {
     active: number;
     canceled: number;
     done: number;
   };
+  skippedRowsCount: number;
+  skippedRows: SkippedSubscriptionRow[]; // Tier 1: Excluded from math (Status, Cycle, Cost unusable)
+  flaggedFieldsCount: number;
+  flaggedFields: FlaggedSubscriptionField[]; // Tier 2: Counted in math, metadata flagged (Bill Day, Trial Ends, Ends)
 }
 

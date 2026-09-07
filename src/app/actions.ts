@@ -17,6 +17,12 @@ import {
   type LocationSummary,
   type HoldingType,
   type SkippedHoldingRow,
+  type SubscriptionsData,
+  type Subscription,
+  type SubscriptionStatus,
+  type SkippedSubscriptionRow,
+  type FlaggedSubscriptionField,
+  type EndingSoonItem,
 } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import {
@@ -25,6 +31,7 @@ import {
   appendHoldingToSheet,
   fetchLiveIncomeSheetData,
   fetchLiveHoldingsSheetData,
+  fetchLiveSubscriptionsSheetData,
 } from "@/lib/google-sheets";
 
 
@@ -680,3 +687,377 @@ export async function fetchV2CSVData(): Promise<V2AnalyticsData | null> {
     return null;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Subscriptions Server Actions (Phase 4: Money Committed — Revised)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Parses date string in various sheet formats (MM/DD/YYYY, YYYY-MM-DD, M/D/YY).
+ * Returns validity, Date object, and formatted string.
+ * Blank, 'none', '-', and empty strings are valid empty dates.
+ */
+function parseSubscriptionDate(dateStr: string): { valid: boolean; date?: Date; formatted?: string } {
+  if (!dateStr) return { valid: true };
+  const trimmed = dateStr.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'none' || trimmed === '-' || trimmed.toLowerCase() === 'n/a') {
+    return { valid: true };
+  }
+
+  // Handle MM/DD/YYYY or M/D/YYYY
+  if (trimmed.includes('/')) {
+    const parts = trimmed.split('/');
+    if (parts.length === 3) {
+      const m = parseInt(parts[0], 10);
+      const d = parseInt(parts[1], 10);
+      let y = parseInt(parts[2], 10);
+      if (y < 100) y += 2000;
+      if (!isNaN(m) && !isNaN(d) && !isNaN(y) && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+        const parsedDate = new Date(y, m - 1, d);
+        const formatted = `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}/${y}`;
+        return { valid: true, date: parsedDate, formatted };
+      }
+    }
+  }
+
+  // Handle YYYY-MM-DD
+  if (trimmed.includes('-')) {
+    const parts = trimmed.split('-');
+    if (parts.length === 3) {
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const d = parseInt(parts[2], 10);
+      if (!isNaN(m) && !isNaN(d) && !isNaN(y) && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+        const parsedDate = new Date(y, m - 1, d);
+        const formatted = `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}/${y}`;
+        return { valid: true, date: parsedDate, formatted };
+      }
+    }
+  }
+
+  // Fallback timestamp
+  const timestamp = Date.parse(trimmed);
+  if (!isNaN(timestamp)) {
+    const dObj = new Date(timestamp);
+    const m = dObj.getMonth() + 1;
+    const d = dObj.getDate();
+    const y = dObj.getFullYear();
+    return { valid: true, date: dObj, formatted: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}/${y}` };
+  }
+
+  return { valid: false };
+}
+
+/**
+ * Normalizes status case- and whitespace-insensitively.
+ * Valid: Active, Canceled, Done.
+ */
+function normalizeSubscriptionStatus(val: string): SubscriptionStatus | null {
+  const s = val.trim().toLowerCase();
+  if (s === 'active') return 'Active';
+  if (s === 'canceled' || s === 'cancelled' || s === 'cancel') return 'Canceled';
+  if (s === 'done' || s === 'completed' || s === 'paid') return 'Done';
+  return null;
+}
+
+/**
+ * Normalizes cycle case- and whitespace-insensitively.
+ * Valid: Monthly, Yearly.
+ */
+function normalizeSubscriptionCycle(val: string): 'Monthly' | 'Yearly' | null {
+  const c = val.trim().toLowerCase();
+  if (c.startsWith('month')) return 'Monthly';
+  if (c.startsWith('year') || c.startsWith('annual')) return 'Yearly';
+  return null;
+}
+
+/**
+ * Fetches all subscriptions from the live 'Subscriptions' sheet tab (range A2:J).
+ * - Normalizes Status, Cycle, Category case- and whitespace-insensitively.
+ * - Surfaces any unrecognized or unparseable row as a visible warning in skippedRows.
+ * - Computes:
+ *   1. Committed this month (Active monthly commitments where Ends is blank or in the future)
+ *   2. Yearly items (listed individually with cost and due date)
+ *   3. Ending soon (commitments with Ends or Trial Ends within next 60 days)
+ */
+export async function fetchSubscriptions(): Promise<SubscriptionsData> {
+  const defaultData: SubscriptionsData = {
+    subscriptions: [],
+    committedThisMonth: 0,
+    yearlyItems: [],
+    endingSoon: [],
+    counts: { active: 0, canceled: 0, done: 0 },
+    skippedRowsCount: 0,
+    skippedRows: [],
+    flaggedFieldsCount: 0,
+    flaggedFields: [],
+  };
+
+  try {
+    const rows = await fetchLiveSubscriptionsSheetData();
+    if (!rows || rows.length === 0) {
+      return defaultData;
+    }
+
+    const subscriptions: Subscription[] = [];
+    const skippedRows: SkippedSubscriptionRow[] = [];
+    const flaggedFields: FlaggedSubscriptionField[] = [];
+    const endingSoon: EndingSoonItem[] = [];
+    const yearlyItems: Subscription[] = [];
+    let committedThisMonth = 0;
+    const counts = { active: 0, canceled: 0, done: 0 };
+
+    const now = new Date();
+    // Start of current month to determine if commitment was still active during this month
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    rows.forEach((row, index) => {
+      const sheetRowNumber = index + 2; // Row 1 is header
+
+      const hasAnyContent = row && row.some(cell => cell !== undefined && String(cell).trim() !== '');
+      if (!hasAnyContent) {
+        return;
+      }
+
+      // Column A: Name (Required - Tier 1)
+      const rawName = row[0] !== undefined ? String(row[0]).replace(/[\r\n]+/g, '').trim() : '';
+      if (!rawName) {
+        skippedRows.push({
+          rowNumber: sheetRowNumber,
+          name: 'Unknown',
+          field: 'Name',
+          reason: 'Missing subscription name',
+        });
+        return;
+      }
+
+      // Column B: Status (Active, Canceled, Done - Tier 1)
+      const rawStatus = row[1] !== undefined ? String(row[1]).replace(/[\r\n]+/g, '').trim() : '';
+      const status = normalizeSubscriptionStatus(rawStatus);
+      if (!status) {
+        skippedRows.push({
+          rowNumber: sheetRowNumber,
+          name: rawName,
+          field: 'Status',
+          offendingValue: rawStatus || '(empty)',
+          reason: `Unrecognized status "${rawStatus}" (expected Active, Canceled, or Done)`,
+        });
+        return;
+      }
+
+      // Column C: Category
+      const rawCategory = row[2] !== undefined ? String(row[2]).replace(/[\r\n]+/g, '').trim() : '';
+      const category = rawCategory || 'Other';
+
+      // Column D: Cost (Must be valid number >= 0. $0 is explicitly valid - Tier 1)
+      const rawCostStr = row[3] !== undefined ? String(row[3]).replace(/[\r\n]+/g, '').trim() : '';
+      const cost = parseHoldingAmount(rawCostStr);
+      if (rawCostStr === '' || isNaN(cost) || cost < 0) {
+        skippedRows.push({
+          rowNumber: sheetRowNumber,
+          name: rawName,
+          field: 'Cost',
+          offendingValue: rawCostStr || '(empty)',
+          reason: `Invalid cost "${rawCostStr}" (must be a number >= 0)`,
+        });
+        return;
+      }
+
+      // Column E: Cycle (Monthly, Yearly - Tier 1)
+      const rawCycle = row[4] !== undefined ? String(row[4]).replace(/[\r\n]+/g, '').trim() : '';
+      const cycle = normalizeSubscriptionCycle(rawCycle);
+      if (!cycle) {
+        skippedRows.push({
+          rowNumber: sheetRowNumber,
+          name: rawName,
+          field: 'Cycle',
+          offendingValue: rawCycle || '(empty)',
+          reason: `Unrecognized cycle "${rawCycle}" (expected Monthly or Yearly)`,
+        });
+        return;
+      }
+
+      // Column F: Bill Day (Blank is valid. Tier 2: count row, flag bad field)
+      const rawBillDay = row[5] !== undefined ? String(row[5]).replace(/[\r\n]+/g, '').trim() : '';
+      let billDate: number | undefined = undefined;
+      if (rawBillDay) {
+        const match = rawBillDay.match(/\d+/);
+        if (match) {
+          const parsedDay = parseInt(match[0], 10);
+          if (parsedDay >= 1 && parsedDay <= 31) {
+            billDate = parsedDay;
+          } else {
+            flaggedFields.push({
+              rowNumber: sheetRowNumber,
+              name: rawName,
+              field: 'Bill Day',
+              offendingValue: rawBillDay,
+              reason: `Bill day ${parsedDay} is out of range 1-31. Field ignored; commitment counted.`,
+            });
+          }
+        } else {
+          flaggedFields.push({
+            rowNumber: sheetRowNumber,
+            name: rawName,
+            field: 'Bill Day',
+            offendingValue: rawBillDay,
+            reason: `Unparseable bill day "${rawBillDay}". Field ignored; commitment counted.`,
+          });
+        }
+      }
+
+      // Column G: Bank (Blank is valid)
+      const rawBank = row[6] !== undefined ? String(row[6]).replace(/[\r\n]+/g, '').trim() : '';
+      let bank: string | undefined = undefined;
+      if (rawBank && rawBank.toLowerCase() !== 'none') {
+        bank = rawBank.replace(/_/g, ' ');
+      }
+
+      // Column H: Trial Ends (Blank is valid. Tier 2: count row, flag bad field)
+      const rawTrialEnds = row[7] !== undefined ? String(row[7]).replace(/[\r\n]+/g, '').trim() : '';
+      let trialEnds: string | undefined = undefined;
+      let trialEndsDate: Date | undefined = undefined;
+      if (rawTrialEnds) {
+        const parsed = parseSubscriptionDate(rawTrialEnds);
+        if (!parsed.valid) {
+          flaggedFields.push({
+            rowNumber: sheetRowNumber,
+            name: rawName,
+            field: 'Trial Ends',
+            offendingValue: rawTrialEnds,
+            reason: `Unparseable trial end date "${rawTrialEnds}". Field ignored; commitment counted.`,
+          });
+        } else {
+          trialEnds = parsed.formatted;
+          trialEndsDate = parsed.date;
+        }
+      }
+
+      // Column I: Notes (Blank is valid)
+      const rawNotes = row[8] !== undefined ? String(row[8]).replace(/[\r\n]+/g, '').trim() : '';
+      let notes: string | undefined = undefined;
+      if (rawNotes && rawNotes.toLowerCase() !== 'none') {
+        notes = rawNotes;
+      }
+
+      // Column J: Ends (Blank is valid. Tier 2: treat unparseable as ongoing, count row, flag bad field)
+      const rawEnds = row[9] !== undefined ? String(row[9]).replace(/[\r\n]+/g, '').trim() : '';
+      let ends: string | undefined = undefined;
+      let endsDate: Date | undefined = undefined;
+      if (rawEnds) {
+        const parsed = parseSubscriptionDate(rawEnds);
+        if (!parsed.valid) {
+          flaggedFields.push({
+            rowNumber: sheetRowNumber,
+            name: rawName,
+            field: 'Ends',
+            offendingValue: rawEnds,
+            reason: `Unparseable commitment end date "${rawEnds}". Treated as ongoing and counted.`,
+          });
+          // Unparseable ends is treated as ongoing (endsDate remains undefined)
+        } else {
+          ends = parsed.formatted;
+          endsDate = parsed.date;
+        }
+      }
+
+      const subscription: Subscription = {
+        name: rawName,
+        status,
+        category,
+        cost,
+        cycle,
+        billDate,
+        bank,
+        trialEnds,
+        notes,
+        ends,
+      };
+
+      subscriptions.push(subscription);
+
+      // Status counts
+      if (status === 'Active') {
+        counts.active++;
+
+        // 1. Committed this month calculation:
+        // Sum of Active monthly subscriptions where Ends is blank or in the future
+        const isCommitmentActiveThisMonth = !endsDate || endsDate >= startOfCurrentMonth;
+        if (cycle === 'Monthly' && isCommitmentActiveThisMonth) {
+          committedThisMonth += cost;
+        }
+
+        // 2. Yearly items:
+        if (cycle === 'Yearly') {
+          yearlyItems.push(subscription);
+        }
+
+        // 3. Ending soon check (within next 60 days):
+        // A) Trial Ends within next 60 days (Price changes)
+        if (trialEndsDate) {
+          const diffMs = trialEndsDate.getTime() - now.getTime();
+          const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          if (daysRemaining >= 0 && daysRemaining <= 60) {
+            endingSoon.push({
+              name: rawName,
+              category,
+              cost,
+              cycle,
+              bank,
+              type: 'trial_ends',
+              dateStr: trialEnds!,
+              daysRemaining,
+              notes,
+            });
+          }
+        }
+
+        // B) Ends within next 60 days (Payment stops)
+        if (endsDate) {
+          const diffMs = endsDate.getTime() - now.getTime();
+          const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          if (daysRemaining >= 0 && daysRemaining <= 60) {
+            endingSoon.push({
+              name: rawName,
+              category,
+              cost,
+              cycle,
+              bank,
+              type: 'commitment_ends',
+              dateStr: ends!,
+              daysRemaining,
+              notes,
+            });
+          }
+        }
+      } else if (status === 'Canceled') {
+        counts.canceled++;
+      } else if (status === 'Done') {
+        counts.done++;
+      }
+    });
+
+    // Sort ending soon by daysRemaining ascending (most urgent first)
+    endingSoon.sort((a, b) => a.daysRemaining - b.daysRemaining);
+
+    // Sort yearly items by billDate if available
+    yearlyItems.sort((a, b) => (a.billDate || 0) - (b.billDate || 0));
+
+    return {
+      subscriptions,
+      committedThisMonth: Math.round(committedThisMonth * 100) / 100,
+      yearlyItems,
+      endingSoon,
+      counts,
+      skippedRowsCount: skippedRows.length,
+      skippedRows,
+      flaggedFieldsCount: flaggedFields.length,
+      flaggedFields,
+    };
+  } catch (error) {
+    console.error('Error fetching subscriptions from live sheet:', error);
+    return defaultData;
+  }
+}
+
+
