@@ -1,18 +1,43 @@
 # Insight Budgeting App
 
-> **Log expenses. Track subscriptions. See the truth in your spending.**
+> **Capture money in, money out, and money parked. See the truth in your spending.**
 
-Insight is a mobile-first personal finance app that consolidates expense tracking, spending analytics, and subscription management in one place. Built for speed and clarity — no AI guesses, just your real data visualized.
+Insight is a mobile-first personal finance app backed entirely by Google Sheets. It captures four kinds of money and shows you exactly what's happening — no predictions, no algorithms, just your real data.
 
 ## Why Insight?
 
 Most budgeting apps are bloated, slow, or try to "predict" your behavior with AI. Insight takes a different approach: **capture real data effortlessly, then show you exactly what's happening.**
 
-The philosophy is simple:
-
 - The easier it is to log, the more accurate your data
 - Your data stays yours (Google Sheets backend)
+- Balances are always derived from history, never stored
 - Real insights come from real patterns, not algorithms
+
+---
+
+## The Money Model
+
+Four tabs in one Google Sheet. Every number in the app is derived from them.
+
+| Tab | Captures | Lifecycle |
+| --- | --- | --- |
+| `Transactions` | Money **spent** — decisions you made | Ephemeral — exported and cleared monthly (C–E only) |
+| `Income` | Money **arrived** — gross, never net | **Permanent, append-only** |
+| `Holdings` | Money **parked** — savings and investments | **Permanent, append-only** |
+| `Subscriptions` | Money **committed** — recurring obligations | **Permanent registry** — edited in place |
+
+### Logged vs Committed — the core distinction
+
+Two genuinely different kinds of money leaving your account:
+
+- **Logged spending** — decisions you made. You chose each one. Lives in `Transactions`.
+- **Committed cost** — money you already agreed to. Rent, subscriptions, financing. No decision happens when it bills. Lives in `Subscriptions`.
+
+Committed cost is **derived from the registry, never written as transactions.** The two figures are shown side by side and totalled, but never merged. The distinction is the point.
+
+> [!CAUTION]
+> **NEVER log a committed cost as an expense.**
+> If you manually log rent or a subscription in `Transactions`, it is counted twice — once as logged spending, once as committed cost. Nothing detects this. Committed costs are counted by existing in the registry. They are never logged.
 
 ---
 
@@ -23,146 +48,169 @@ The philosophy is simple:
 Log purchases in seconds — right after you buy.
 
 - Amount, category, and **mood** (Planned, Impulse, Social, Necessary, Treat)
-- Syncs instantly to your Google Sheet
+- Appends to the `Transactions` tab in real time
 - Mobile-optimized for on-the-go entry
-
-### 📊 Spending Analytics
-
-Two dashboard views for complete visibility:
-
-**2025 Historical (V1)**
-
-- Monthly spending trends
-- Category breakdown
-- Month-over-month changes
-
-**2026 Insights (V2)**
-
-- Spending by mood — see how much is impulsive vs. planned
-- Category breakdown
-- When you spend — heatmap by day and time
-- Day & time patterns — which days and times cost you most
 
 ### 💵 Income Tracking
 
-Gross money arrived — permanent and append-only.
+Gross money arrived. Permanent and append-only.
 
 - Log payments in seconds (Amount, Source, Date, Notes)
-- Sources derived dynamically from sheet entries with instant in-app creation
-- Real-time current month gross breakdown by source with percentage distribution
+- Sources derived dynamically from existing sheet entries, with in-app creation of new ones
+- Current month total plus breakdown by source
+- A log, not a setting — a month with a gig has an extra row; a month without has one fewer. Nothing is ever updated
 
 ### 🏦 Holdings & Parked Capital
 
-Money parked in savings and investment accounts together.
+Savings and investments together. Location is the only distinction.
 
-- Balances derived fresh on load (`opening + contributions - withdrawals`) — never stored or cached
+- Balances derived fresh on every load: `opening + contributions − withdrawals`. Never stored, never cached, cannot drift
 - Strict movement types: `contribution`, `withdrawal`, `opening`
-- All-time scoped view with per-account balances, start dates, and movement history
-- Proactive detection and alerting for typos or invalid sheet entries
+- All-time scoped — never nested inside a monthly view
+- Shows contributed capital, not market value. Your brokerage will show a higher number; that gap is your return and lives outside this system by design
+- Invalid rows surfaced with row numbers, never silently dropped
 
-### 💳 Subscription Tracker
+### 💳 Subscriptions & Committed Cost
 
-All your recurring costs in one view.
+The registry of everything you've already agreed to pay.
 
-- Monthly and yearly totals at a glance
-- Status tracking: Active, Done, Canceled
-- Organized by status with collapsible sections
-- Bank and billing cycle info per subscription
+- **Committed this month** — sum of active monthly obligations still running
+- **Yearly items** — listed individually with due dates. Never divided by twelve, never folded into the monthly figure
+- **Ending soon** — anything expiring or converting within 60 days
+- No annual projection. `monthly × 12` assumes commitments run forever, which is false
+- Two-tier validation: rows with a bad Status, Cycle, or Cost are excluded and flagged; rows with only bad metadata are counted and flagged
 
----
+### 📊 Spending Analytics
 
-## How It Works
+**Current Month (Live)** — money in and money out together:
 
-**Expense Logging** → `Transactions` tab in Google Sheets (real-time sync)
+```
+Logged spending      $X   (month to date)
+Committed recurring  $Y   (full month)
+────────────────────────────
+Running floor out    $X + Y
+```
 
-**Income Logging** → `Income` tab in Google Sheets (permanent append-only)
+Called a *running floor* rather than a total, because mid-month it combines partial spending with a full month of obligations. It becomes a true total only on the last day.
 
-**Holdings Logging** → `Holdings` tab in Google Sheets (permanent append-only, derived balances)
+**2026 Insights (V2)** — mood breakdown, category breakdown, spending heatmap, day and time patterns.
 
-**Analytics** → Reads from local CSV masters + live Google Sheet, fresh on every page load
+**2025 Historical (V1)** — monthly trends, category breakdown, month-over-month changes.
 
-**Subscriptions** → CSV-based, manually updated
-
-No cloud sync magic. No AI predictions. Just clean data flow you control.
+Historical views read from CSV masters, which contain no subscription data. Committed cost is never injected into past months.
 
 ---
 
 ## Tech Stack
 
 - **Framework**: Next.js (React)
-- **Backend**: Google Sheets API + CSV
+- **Backend**: Google Sheets API + CSV for historical masters
 - **Styling**: Tailwind CSS & shadcn/ui
 - **Charts**: Recharts
 - **Validation**: Zod
 
 ---
 
-## Data Structure & Money Model
+## Sheet Schemas
 
-| Tab / File | Purpose | Lifecycle |
-| --- | --- | --- |
-| `Transactions` (Live Sheet) | Money **spent** | Ephemeral — exported & cleared monthly (C–E only) |
-| `Income` (Live Sheet) | Money **arrived** | **Permanent, append-only — NEVER cleared** |
-| `Holdings` (Live Sheet) | Money **parked** (savings + investments) | **Permanent, append-only — NEVER cleared** |
-| `V1_master_finances-2025.csv` | 2025 Historical spending | Static CSV |
-| `V2_master_finances-2026.csv` | 2026 Consolidated spending | Updated monthly via `add-data` |
-| `subscriptions_master.csv` | Recurring subscriptions | Manual updates |
+**`Transactions`** — data starts row 5
+
+| C | D | E | F–I |
+| --- | --- | --- | --- |
+| Amount | Category | Mood | Array formulas (Time, Day, Week, Date) |
+
+**`Income`** — data starts row 2
+
+| A | B | C | D |
+| --- | --- | --- | --- |
+| Date | Source | Amount | Notes |
+
+**`Holdings`** — data starts row 2
+
+| A | B | C | D | E |
+| --- | --- | --- | --- | --- |
+| Date | Location | Amount | Type | Notes |
+
+`Type` is a strict dropdown: `contribution`, `withdrawal`, `opening`. Amount is always positive; Type carries direction. `opening` seeds a balance that existed before tracking began — one row per account, once.
+
+**`Subscriptions`** — data starts row 2
+
+| A | B | C | D | E | F | G | H | I | J |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Name | Status | Category | Cost | Cycle | Bill Day | Bank | Trial Ends | Notes | Ends |
+
+`Trial Ends` means the **price changes**. `Ends` means the **payment stops** (lease end, financing payoff). Blank `Ends` is treated as ongoing.
 
 ---
 
 ## Setup
 
-### Google Sheet Integration (One-Time Setup)
+### Google Sheet Integration (One-Time)
 
-You only need to configure the Google Sheet once. **The app reuses a single, persistent Google Sheet forever.** The Sheet ID never changes, so Vercel environment variables are set once and never touched again.
+The app reuses a single persistent Google Sheet. The Sheet ID never changes.
 
-1. Create a Google Sheet with `Transactions`, `Income`, and `Holdings` tabs.
+1. Create a Google Sheet with four tabs: `Transactions`, `Income`, `Holdings`, `Subscriptions`.
 2. Share it with your Service Account email (Editor access).
-3. Add the Sheet ID to your Vercel environment variables.
+3. Add the Sheet ID to your environment variables — both `.env.local` and Vercel.
 
-### Monthly Rollover Ritual (`Transactions` Tab Only)
+> [!WARNING]
+> If you ever change sheets, update **both** local and Vercel environment variables. A stale `GOOGLE_SHEET_ID` produces a 404 on the newer tabs while older tabs keep working — a confusing failure that looks like a code bug.
+
+### Environment Variables
+
+```
+GOOGLE_SHEET_ID=
+GOOGLE_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_PRIVATE_KEY=
+```
+
+---
+
+## Monthly Rollover Ritual — `Transactions` Only
 
 > [!IMPORTANT]
-> **The Monthly Rollover applies strictly to the `Transactions` tab.**
+> **The rollover applies strictly to the `Transactions` tab.**
 >
-> **`Income` and `Holdings` are permanent and append-only. NEVER clear or delete them.**
-> - Clearing `Income` destroys your earnings and client history.
-> - Clearing `Holdings` destroys your account balance history and resets every balance to zero.
+> **`Income`, `Holdings`, and `Subscriptions` are permanent. NEVER clear them.**
+> - Clearing `Income` destroys your earnings history.
+> - Clearing `Holdings` resets every account balance to zero.
+> - Clearing `Subscriptions` erases your committed cost registry.
 
-Because the dashboard automatically filters the live sheet to show only the current calendar month, stale rows don't break anything. However, to keep your insights accurate and the sheet clean, follow this rollover process at the end of each month (export **one month at a time**, never batched):
+Export one month at a time, never batched:
 
 1. **Export** the completed month's rows from the `Transactions` tab as a CSV.
-2. **Save** the CSV file into the `public/raw-data/` directory (e.g., `Apr-2026.csv`).
-3. **Run** the consolidation command in your terminal to fold it into the V2 master:
+2. **Save** it into `public/raw-data/` (e.g. `Apr-2026.csv`).
+3. **Run** the consolidation command:
    ```powershell
    .\run.ps1 add-data -File public\raw-data\Apr-2026.csv
    ```
-4. **Archive** the exported rows into your personal master tracker (a separate sheet, unrelated to the app).
-5. **Clear** the values in columns C, D, and E for the consolidated month's rows in the `Transactions` tab.
+4. **Archive** the exported rows into your personal master tracker.
+5. **Clear** the values in columns C, D, and E for the consolidated rows.
 
 > [!WARNING]
-> **NEVER DELETE ROWS in your live `Transactions` tab.** Only clear the values in columns C, D, and E.
-> Columns F through I contain hidden array formulas that auto-stamp the Time, Day, Week, and Date for new entries. Deleting rows will destroy these formulas and silently break new expense logging.
+> **NEVER DELETE ROWS in the `Transactions` tab.** Clear values in C, D, and E only.
+> Columns F through I contain array formulas that auto-stamp Time, Day, Week, and Date. Deleting rows destroys them and silently breaks expense logging.
 
 > [!TIP]
-> The consolidation script is "smart"—if you run it again with the same file, it will **replace** that month's data in the master file rather than duplicating it. This prevents double-entries while allowing you to update a month if you add more data later.
+> The consolidation script replaces a month's data rather than duplicating it if run twice with the same file.
+
+---
+
+## Maintenance Habits
+
+The system only stays true if the registry does.
+
+- **Review Subscriptions quarterly.** A stale registry means a wrong committed figure presented with full confidence.
+- **Watch "Ending soon."** A $0 trial today is a real cost on its renewal date.
+- **Keep Source and Location names consistent.** Use the derived pickers rather than retyping.
+- **Never manually log a committed cost.** See the caution above.
 
 ---
 
 ## Commands
 
-Start the development server:
 ```powershell
-.\run.ps1 dev
+.\run.ps1 dev                                        # Development server
+.\run.ps1 add-data -File public\raw-data\Mar-2026.csv # Fold a month into the V2 master
+.\run.ps1 genkit                                     # Genkit process
 ```
-
-Append or update a month's CSV data in the master file:
-```powershell
-.\run.ps1 add-data -File public\raw-data\Mar-2026.csv
-```
-
-Start the Genkit process:
-```powershell
-.\run.ps1 genkit
-```
-
