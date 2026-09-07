@@ -17,8 +17,10 @@ import { MoodAnalysisChart } from './charts/mood-analysis-chart';
 
 // Features
 import { CurrentMonthView } from './current-month-view';
+import { IncomeView } from './income-view';
 import { PreviousMonthView } from './previous-month-view';
 import { ForecastView } from './forecast-view';
+import { HoldingsView } from './holdings-view';
 
 // Data & Types
 import { fetchAndParseCSV, type AnalyticsData } from '@/lib/csv-parser';
@@ -37,7 +39,8 @@ import {
   Grid3X3,
   Sparkles,
   History,
-  Zap
+  Zap,
+  Landmark
 } from 'lucide-react';
 
 export function AnalysisView() {
@@ -169,14 +172,19 @@ export function AnalysisView() {
           </AccordionTrigger>
           <AccordionContent className="px-5 pb-5">
             <Tabs defaultValue="current" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="current">Current Month</TabsTrigger>
-                <TabsTrigger value="previous">Previous Month</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-4 mb-4">
+                <TabsTrigger value="current">Spending</TabsTrigger>
+                <TabsTrigger value="income">Income</TabsTrigger>
+                <TabsTrigger value="previous">Previous</TabsTrigger>
                 <TabsTrigger value="forecast">Forecast</TabsTrigger>
               </TabsList>
 
               <TabsContent value="current">
                 <CurrentMonthView />
+              </TabsContent>
+
+              <TabsContent value="income">
+                <IncomeView />
               </TabsContent>
 
               <TabsContent value="previous">
@@ -187,6 +195,29 @@ export function AnalysisView() {
                 <ForecastView />
               </TabsContent>
             </Tabs>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Holdings Section - LIVE DATA (Cumulative & All-Time) */}
+        <AccordionItem value="all-time-holdings" className="border border-indigo-500/30 rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm">
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/30 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-indigo-500/20">
+                <Landmark className="w-5 h-5 text-indigo-500" />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-lg">All-Time Holdings</span>
+                  <Badge className="bg-indigo-500/20 text-indigo-500 border-indigo-500/30 hover:bg-indigo-500/30">All-Time</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground font-normal">
+                  Savings & investments parked across all accounts
+                </p>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <HoldingsView />
           </AccordionContent>
         </AccordionItem>
 

@@ -38,6 +38,125 @@ export const expenseSchema = z.object({
 export type Expense = z.infer<typeof expenseSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════
+// Income Types & Schema
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Seed fallback only — distinct sources are derived dynamically from the Income tab.
+export const seedIncomeSources = [
+  "Salary",
+  "Gift",
+] as const;
+
+export const incomeSchema = z.object({
+  amount: z.coerce
+    .number({ invalid_type_error: "Please enter a valid amount." })
+    .positive("Amount must be positive.")
+    .min(0.01, "Amount must be at least $0.01"),
+  source: z.string({
+    required_error: "Please select or enter an income source.",
+  }).trim().min(1, "Income source cannot be blank."),
+  date: z
+    .string({
+      required_error: "Please specify the date.",
+    })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date (YYYY-MM-DD)."),
+  notes: z.string().optional(),
+});
+
+export type IncomeFormData = z.infer<typeof incomeSchema>;
+
+export interface IncomeEntry {
+  date: string; // YYYY-MM-DD
+  source: string;
+  amount: number;
+  notes?: string;
+}
+
+export interface IncomeSourceBreakdown {
+  source: string;
+  total: number;
+  percentage: number;
+  count: number;
+}
+
+export interface IncomeMonthData {
+  month: string; // e.g. "Sep 2026"
+  totalIncome: number;
+  entriesCount: number;
+  breakdown: IncomeSourceBreakdown[];
+  entries: IncomeEntry[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Holdings Types & Schema (Phase 2: Money Parked)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const holdingTypes = ["contribution", "withdrawal", "opening"] as const;
+export type HoldingType = typeof holdingTypes[number];
+
+export const holdingSchema = z.object({
+  amount: z.coerce
+    .number({ invalid_type_error: "Please enter a valid amount." })
+    .positive("Amount must be positive.")
+    .min(0.01, "Amount must be at least $0.01"),
+  location: z
+    .string({
+      required_error: "Please select or enter an account location.",
+    })
+    .trim()
+    .min(1, "Account location cannot be blank."),
+  type: z.enum(holdingTypes, {
+    required_error: "Please select a transaction type.",
+  }),
+  date: z
+    .string({
+      required_error: "Please specify the date.",
+    })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date (YYYY-MM-DD)."),
+  notes: z.string().optional(),
+});
+
+export type HoldingFormData = z.infer<typeof holdingSchema>;
+
+export interface HoldingEntry {
+  date: string; // YYYY-MM-DD
+  location: string;
+  amount: number;
+  type: HoldingType;
+  notes?: string;
+}
+
+export interface LocationSummary {
+  location: string;
+  balance: number;            // opening + contributions - withdrawals
+  totalContributed: number;   // sum of contributions
+  openingBalance: number;     // opening balance (if any)
+  totalWithdrawn: number;     // sum of withdrawals
+  startDate: string;          // earliest date among its rows
+  entryCount: number;
+  lastActivityDate?: string;
+}
+
+export interface SkippedHoldingRow {
+  rowNumber: number;
+  location?: string;
+  rawType?: string;
+  reason: string;
+}
+
+export interface HoldingsSummaryData {
+  combinedBalance: number;
+  combinedContributed: number; // strictly sum of contributions, excludes opening
+  combinedOpening: number;     // strictly sum of opening balances
+  combinedWithdrawn: number;
+  accountCount: number;
+  locations: LocationSummary[];
+  recentEntries: HoldingEntry[];
+  skippedRowsCount: number;
+  skippedRows: SkippedHoldingRow[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // V2 Types (2026+ Data with Mood, TimeOfDay, DayOfWeek)
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -115,11 +234,36 @@ export interface V2AnalyticsData {
 export const subscriptionStatuses = ["Active", "Canceled", "Done"] as const;
 export type SubscriptionStatus = typeof subscriptionStatuses[number];
 
-export const subscriptionCycles = ["Monthly-Start", "Monthly-Mid", "Monthly-End", "Yearly"] as const;
+export const subscriptionCycles = ["Monthly", "Yearly"] as const;
 export type SubscriptionCycle = typeof subscriptionCycles[number];
 
-export const bankAccounts = ["Navy", "Apple Card", "Santander", "Capital One"] as const;
-export type BankAccount = typeof bankAccounts[number];
+export interface SkippedSubscriptionRow {
+  rowNumber: number;
+  name?: string;
+  field?: string;
+  offendingValue?: string;
+  reason: string;
+}
+
+export interface FlaggedSubscriptionField {
+  rowNumber: number;
+  name: string;
+  field: 'Bill Day' | 'Trial Ends' | 'Ends';
+  offendingValue?: string;
+  reason: string;
+}
+
+export interface EndingSoonItem {
+  name: string;
+  category: string;
+  cost: number;
+  cycle: SubscriptionCycle;
+  bank?: string;
+  type: 'trial_ends' | 'commitment_ends';
+  dateStr: string;
+  daysRemaining: number;
+  notes?: string;
+}
 
 export interface Subscription {
   name: string;
@@ -128,18 +272,25 @@ export interface Subscription {
   cost: number;
   cycle: SubscriptionCycle;
   billDate?: number;
-  bank?: BankAccount;
+  bank?: string;
+  trialEnds?: string;
   notes?: string;
+  ends?: string;
 }
 
 export interface SubscriptionsData {
   subscriptions: Subscription[];
-  monthlyTotal: number;      // Sum of Active monthly costs
-  yearlyTotal: number;       // (monthlyTotal × 12) + yearly costs
+  committedThisMonth: number;   // Sum of Active monthly subscriptions where Ends is blank or in the future
+  yearlyItems: Subscription[];  // Active yearly items listed individually with cost and due date
+  endingSoon: EndingSoonItem[];  // Items with Ends or Trial Ends within next 60 days
   counts: {
     active: number;
     canceled: number;
     done: number;
   };
+  skippedRowsCount: number;
+  skippedRows: SkippedSubscriptionRow[]; // Tier 1: Excluded from math (Status, Cycle, Cost unusable)
+  flaggedFieldsCount: number;
+  flaggedFields: FlaggedSubscriptionField[]; // Tier 2: Counted in math, metadata flagged (Bill Day, Trial Ends, Ends)
 }
 

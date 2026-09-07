@@ -145,5 +145,5 @@ make add-data FILE=x.csv    # Append month to V2 master
 ✅ V1 analytics (2025 historical)
 ✅ V2 analytics (2026 with mood/time)
 ✅ Current month live view
-✅ Subscriptions (password-protected)
+✅ Subscriptions 
 ✅ Predictions (basic forecasting)
