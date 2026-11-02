@@ -49,3 +49,7 @@ firestore-debug.log
 
 # Raw Data
 public/RawDataV2/*
+
+# Research Data
+public/research/*
+documentation/*
