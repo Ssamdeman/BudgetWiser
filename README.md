@@ -213,4 +213,4 @@ The system only stays true if the registry does.
 .\run.ps1 dev                                        # Development server
 .\run.ps1 add-data -File public\raw-data\Mar-2026.csv # Fold a month into the V2 master
 .\run.ps1 genkit                                     # Genkit process
-```
+```w
