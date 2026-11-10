@@ -3,12 +3,10 @@
 import { useEffect, useState, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 
-// V2 Charts (same 5 used in 2026 Insights)
+// V2 Charts (same used in 2026 Insights)
 import { MonthlyMoodChart } from './charts/monthly-mood-chart';
 import { CategoryBreakdownChart } from './charts/category-breakdown-chart';
 import { MoodAnalysisChart } from './charts/mood-analysis-chart';
-import { SpendingHeatmap } from './charts/spending-heatmap';
-import { DayTimeBarsChart } from './charts/day-time-bars-chart';
 
 // Server Actions & Data
 import { 
@@ -29,7 +27,6 @@ import {
   Brain, 
   PieChart, 
   BarChart3, 
-  Grid3X3, 
   Clock,
   AlertCircle,
   ArrowDownRight,
@@ -272,42 +269,6 @@ export function CurrentMonthView() {
             </CardHeader>
             <CardContent className="pt-0">
               <MoodAnalysisChart data={data.moodTotals} />
-            </CardContent>
-          </Card>
-
-          {/* Chart 4: Spending Heatmap */}
-          <Card className="border-border/50 hover:border-border transition-colors">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-primary/10">
-                  <Grid3X3 className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Spending Heatmap</CardTitle>
-                  <CardDescription className="text-xs">When you spend the most (Day × Time)</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <SpendingHeatmap data={data.heatmapData} />
-            </CardContent>
-          </Card>
-
-          {/* Chart 5: Day & Time Breakdown */}
-          <Card className="border-border/50 hover:border-border transition-colors">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-primary/10">
-                  <Clock className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Day & Time Breakdown</CardTitle>
-                  <CardDescription className="text-xs">Spending patterns by day of week and time of day</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <DayTimeBarsChart dayData={data.dayTotals} timeData={data.timeOfDayTotals} />
             </CardContent>
           </Card>
         </>

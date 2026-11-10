@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Current Month View**: Removed unused Spending Heatmap and Day & Time Breakdown charts to streamline monthly overview.
 - **Expense Logging Categories**: Replaced `Utilities` with `Health` in active expense categories and form dropdown.
 - **Icon Mapping**: Added `HeartPulse` icon for `Health` category logging; retired `Utilities` from the active logging form.
 - **Historical Data Preservation**: Existing historical records containing `Utilities` remain unmodified and fully supported in aggregations, reporting, and consolidation pipelines.
