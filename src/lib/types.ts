@@ -6,7 +6,7 @@ export const expenseCategories = [
   "Eating Out",
   "Transportation",
   "Projects",
-  "Utilities",
+  "Health",
   "Beauty/Grooming",
   "Clothing",
   "Travel/Adventure",

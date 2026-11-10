@@ -28,7 +28,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import {
   Car,
-  Lightbulb,
+  HeartPulse,
   MoreHorizontal,
   ShoppingBag,
   UtensilsCrossed,
@@ -51,7 +51,7 @@ const categoryIcons: Record<(typeof expenseCategories)[number], React.ElementTyp
   "Eating Out": ShoppingBag,
   "Transportation": Car,
   "Projects": Hammer,
-  "Utilities": Lightbulb,
+  "Health": HeartPulse,
   "Beauty/Grooming": Scissors,
   "Clothing": Shirt,
   "Travel/Adventure": Plane,
