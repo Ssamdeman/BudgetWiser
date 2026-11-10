@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-11-09
+
+### Added
+
+- **Budget Plan vs Spent Tab**: Added a dedicated top-level `Budget` tab on the main navigation right after `Data` (`[ Data | Budget | Analysis | Subs ]`), placing the real-time plan vs spent right where it matters most.
+- **Architectural Integrity**: Purely derived on load from live sheet data. Spent includes all transactions with a valid amount; rows dated outside the current Eastern month are counted and surfaced with their row numbers in a diagnostic banner.
+- **Dynamic Plan & Caps**: Firm Total limit and guide category caps read directly from the `Budget` tab with zero hardcoded caps in code.
+- **Buffer & Overages**: Dynamic buffer (Total − Sum of Caps) with alerts when caps exceed the total limit; transparent "No cap" section for spending in categories without a guide cap.
+- **Augusta, GA Timezone**: Days remaining in the month computed using Eastern Time (`America/New_York`), counting today.
+- **Graceful Degradation**: If the `Budget` tab fails to load or contains issues (missing/multiple Total rows, invalid caps), other views continue functioning smoothly with issues clearly surfaced.
+
 ## [0.3.1] - 2026-11-09
 
 ### Changed

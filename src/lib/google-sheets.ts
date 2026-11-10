@@ -254,4 +254,30 @@ export async function fetchLiveSubscriptionsSheetData(): Promise<string[][]> {
     throw error;
   }
 }
+
+/**
+ * Fetches all budget planning data from the 'Budget' tab
+ * Reads columns A:B (Category, Cap)
+ * Starting from row 2 (skipping headers in row 1)
+ */
+export async function fetchLiveBudgetSheetData(): Promise<string[][]> {
+  try {
+    const sheets = await getGoogleSheetsClient();
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+    if (!spreadsheetId) {
+      throw new Error('GOOGLE_SHEET_ID is not defined');
+    }
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Budget!A2:B',
+    });
+
+    return response.data.values || [];
+  } catch (error) {
+    console.error('❌ Error fetching live budget sheet data:', error);
+    throw error;
+  }
+}
 

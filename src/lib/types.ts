@@ -294,3 +294,52 @@ export interface SubscriptionsData {
   flaggedFields: FlaggedSubscriptionField[]; // Tier 2: Counted in math, metadata flagged (Bill Day, Trial Ends, Ends)
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Budget Types (Tab 5: Budget vs Spent Plan)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface BudgetCategoryCap {
+  sheetRowNumber: number;
+  category: string;
+  originalCategoryName: string;
+  cap: number;
+}
+
+export interface BudgetIssue {
+  sheetRowNumber?: number;
+  source: 'Budget' | 'Transactions';
+  value?: string;
+  reason: string;
+}
+
+export interface BudgetComparisonItem {
+  category: string;
+  spent: number;
+  cap: number;
+  isOverCap: boolean;
+  overAmount: number;
+  percentage: number;
+}
+
+export interface NoCapSpendingItem {
+  category: string;
+  spent: number;
+}
+
+export interface BudgetViewData {
+  spentSoFar: number;
+  totalCap: number | null;
+  totalRemaining: number | null;
+  isOverTotal: boolean;
+  overTotalAmount: number;
+  daysRemainingInMonth: number;
+  sumOfCaps: number;
+  buffer: number | null;
+  capsExceedTotal: boolean;
+  categoryItems: BudgetComparisonItem[];
+  noCapItems: NoCapSpendingItem[];
+  issues: BudgetIssue[];
+  excludedTransactionsCount: number;
+}
+
+

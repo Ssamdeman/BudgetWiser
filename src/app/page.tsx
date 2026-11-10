@@ -1,6 +1,7 @@
 "use client";
 
 import { LogHub } from '@/components/log-hub';
+import { BudgetView } from '@/components/budget-view';
 import { AnalysisView } from '@/components/analysis-view';
 import { SubscriptionsView } from '@/components/subscriptions-view';
 import { SwipeableTabs } from '@/components/swipeable-tabs';
@@ -10,6 +11,10 @@ export default function Home() {
     {
       name: 'Data',
       content: <LogHub />,
+    },
+    {
+      name: 'Budget',
+      content: <BudgetView />,
     },
     {
       name: 'Analysis',

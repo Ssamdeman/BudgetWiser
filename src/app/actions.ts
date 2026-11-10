@@ -23,6 +23,11 @@ import {
   type SkippedSubscriptionRow,
   type FlaggedSubscriptionField,
   type EndingSoonItem,
+  type BudgetViewData,
+  type BudgetCategoryCap,
+  type BudgetIssue,
+  type BudgetComparisonItem,
+  type NoCapSpendingItem,
 } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import {
@@ -32,6 +37,7 @@ import {
   fetchLiveIncomeSheetData,
   fetchLiveHoldingsSheetData,
   fetchLiveSubscriptionsSheetData,
+  fetchLiveBudgetSheetData,
 } from "@/lib/google-sheets";
 
 
@@ -1059,5 +1065,297 @@ export async function fetchSubscriptions(): Promise<SubscriptionsData> {
     return defaultData;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE BUDGET PLAN VS SPENT ACTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Calculates days remaining in the current month in Augusta, GA (Eastern Time America/New_York),
+ * counting today as a day remaining.
+ */
+function getEasternDaysRemainingInMonth(): number {
+  const now = new Date();
+  const easternFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
+  const parts = easternFormatter.formatToParts(now);
+  const year = parseInt(parts.find(p => p.type === 'year')?.value || '2026', 10);
+  const month = parseInt(parts.find(p => p.type === 'month')?.value || '11', 10);
+  const day = parseInt(parts.find(p => p.type === 'day')?.value || '1', 10);
+
+  // Total days in this current month (month is 1-indexed; date with day=0 gives last day of prev month)
+  const totalDaysInMonth = new Date(year, month, 0).getDate();
+
+  // Counting today: e.g. day 1 of 30 days -> 30 days remaining; day 30 of 30 -> 1 day remaining
+  return Math.max(1, totalDaysInMonth - day + 1);
+}
+
+/**
+ * Normalizes category names for matching: lowercase, trim whitespace.
+ */
+function normalizeCategoryKey(name: string): string {
+  return name.trim().toLowerCase();
+}
+
+/**
+ * Fetches and derives Budget view data.
+ * - Reads Budget!A2:B
+ * - Reads Transactions!C5:I (starting row 5)
+ * - Spent includes every row with a valid amount > 0, whatever its date or category.
+ * - Rows dated outside this month or with unparseable dates still count and are flagged.
+ * - Rows with invalid amounts are tracked and counted.
+ * - Entirely read-only; zero caching.
+ */
+export async function fetchBudgetData(): Promise<{ data: BudgetViewData | null; error?: string }> {
+  try {
+    const [budgetRows, transactionRows] = await Promise.all([
+      fetchLiveBudgetSheetData(),
+      fetchLiveSheetData(),
+    ]);
+
+    const issues: BudgetIssue[] = [];
+
+    // 1. Parse Budget Tab
+    let totalCap: number | null = null;
+    const totalRowMatches: { rowNumber: number; cap: number | null }[] = [];
+    const categoryCaps: BudgetCategoryCap[] = [];
+
+    budgetRows.forEach((row, index) => {
+      const sheetRowNumber = index + 2; // Data starts at row 2
+      const rawCategory = row[0] !== undefined ? String(row[0]).trim() : '';
+      const rawCap = row[1] !== undefined ? String(row[1]).trim() : '';
+
+      // Ignore completely empty row
+      if (!rawCategory && !rawCap) {
+        return;
+      }
+
+      const isTotalRow = rawCategory.toLowerCase() === 'total';
+
+      // Validate Cap column (B)
+      const cleanedCapStr = rawCap.replace(/[$,]/g, '');
+      const capNum = parseFloat(cleanedCapStr);
+      const isCapValid = rawCap !== '' && !isNaN(capNum) && capNum >= 0 && isFinite(capNum);
+
+      if (isTotalRow) {
+        if (!isCapValid) {
+          issues.push({
+            sheetRowNumber,
+            source: 'Budget',
+            value: rawCap || '(blank)',
+            reason: 'Total row cap is missing or not a valid number (>= 0).',
+          });
+          totalRowMatches.push({ rowNumber: sheetRowNumber, cap: null });
+        } else {
+          totalRowMatches.push({ rowNumber: sheetRowNumber, cap: Math.round(capNum * 100) / 100 });
+        }
+      } else {
+        if (!rawCategory) {
+          issues.push({
+            sheetRowNumber,
+            source: 'Budget',
+            value: rawCap,
+            reason: 'Category name is blank.',
+          });
+          return;
+        }
+
+        if (!isCapValid) {
+          issues.push({
+            sheetRowNumber,
+            source: 'Budget',
+            value: rawCap || '(blank)',
+            reason: `Cap for "${rawCategory}" is missing or not a valid number (>= 0). Row omitted from guide caps.`,
+          });
+          return;
+        }
+
+        categoryCaps.push({
+          sheetRowNumber,
+          category: normalizeCategoryKey(rawCategory),
+          originalCategoryName: rawCategory,
+          cap: Math.round(capNum * 100) / 100,
+        });
+      }
+    });
+
+    // Check Total row validity
+    if (totalRowMatches.length === 0) {
+      issues.push({
+        source: 'Budget',
+        reason: 'Missing "Total" row in Budget tab. Guide category bars are shown without a firm total cap.',
+      });
+      totalCap = null;
+    } else if (totalRowMatches.length > 1) {
+      const rowsList = totalRowMatches.map(t => `row ${t.rowNumber}`).join(', ');
+      issues.push({
+        source: 'Budget',
+        reason: `Multiple Total rows found in Budget tab (${rowsList}). Total cap is omitted until resolved.`,
+      });
+      totalCap = null;
+    } else {
+      totalCap = totalRowMatches[0].cap;
+    }
+
+    // 2. Parse Transactions Tab (Rows C5:I)
+    // C=Amount, D=Category, E=Mood, F=TimeOfDay, G=DayOfWeek, H=WeekNumber, I=Date
+    let spentSoFar = 0;
+    let excludedTransactionsCount = 0;
+    const categorySpendingMap = new Map<string, { originalName: string; amount: number }>();
+
+    // Current month identifier for Eastern Time (e.g. "Nov 2026")
+    const easternFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: 'short',
+    });
+    const currentEasternMonthStr = easternFormatter.format(new Date()); // e.g. "Nov 2026"
+
+    transactionRows.forEach((row, index) => {
+      const sheetRowNumber = index + 5; // C5 starts at row 5
+      const rawAmount = row[0] !== undefined ? String(row[0]).trim() : '';
+      const rawCategory = row[1] !== undefined ? String(row[1]).trim() : '';
+      const rawDate = row[6] !== undefined ? String(row[6]).trim() : '';
+
+      // Skip completely empty rows
+      if (!rawAmount && !rawCategory && !rawDate) {
+        return;
+      }
+
+      // Validate Amount (C)
+      const cleanedAmount = rawAmount.replace(/[$,]/g, '');
+      const parsedAmount = parseFloat(cleanedAmount);
+
+      if (!rawAmount || isNaN(parsedAmount) || parsedAmount <= 0) {
+        excludedTransactionsCount++;
+        return;
+      }
+
+      const amount = Math.round(parsedAmount * 100) / 100;
+      spentSoFar += amount;
+
+      // Check Date validity against current Eastern month
+      if (!rawDate) {
+        issues.push({
+          sheetRowNumber,
+          source: 'Transactions',
+          value: '(blank)',
+          reason: `Blank date recorded for $${amount.toFixed(2)}. Spent amount is still counted in Spent so far.`,
+        });
+      } else {
+        const monthOfDate = parseDateToMonth(rawDate);
+        if (!monthOfDate || monthOfDate.toLowerCase() !== currentEasternMonthStr.toLowerCase()) {
+          issues.push({
+            sheetRowNumber,
+            source: 'Transactions',
+            value: rawDate,
+            reason: `Date "${rawDate}" is outside current month (${currentEasternMonthStr}) or unparseable for $${amount.toFixed(2)}. Spent amount is still counted in Spent so far.`,
+          });
+        }
+      }
+
+      // Map to category
+      const effectiveCategoryName = rawCategory || 'Other';
+      const key = normalizeCategoryKey(effectiveCategoryName);
+      const existing = categorySpendingMap.get(key);
+      if (existing) {
+        existing.amount += amount;
+      } else {
+        categorySpendingMap.set(key, { originalName: effectiveCategoryName, amount });
+      }
+    });
+
+    spentSoFar = Math.round(spentSoFar * 100) / 100;
+
+    // 3. Derive Category Items vs No-Cap Items
+    const categoryItems: BudgetComparisonItem[] = [];
+    const matchedCategoryKeys = new Set<string>();
+
+    categoryCaps.forEach(capItem => {
+      matchedCategoryKeys.add(capItem.category);
+      const spentEntry = categorySpendingMap.get(capItem.category);
+      const spent = spentEntry ? Math.round(spentEntry.amount * 100) / 100 : 0;
+      const isOverCap = spent > capItem.cap;
+      const overAmount = isOverCap ? Math.round((spent - capItem.cap) * 100) / 100 : 0;
+      const percentage = capItem.cap > 0 ? Math.round((spent / capItem.cap) * 100) : 0;
+
+      categoryItems.push({
+        category: capItem.originalCategoryName,
+        spent,
+        cap: capItem.cap,
+        isOverCap,
+        overAmount,
+        percentage,
+      });
+    });
+
+    // Unplanned / No-cap spending items (spending in Transactions with no Budget cap row)
+    const noCapItems: NoCapSpendingItem[] = [];
+    for (const [key, data] of categorySpendingMap.entries()) {
+      if (!matchedCategoryKeys.has(key)) {
+        noCapItems.push({
+          category: data.originalName,
+          spent: Math.round(data.amount * 100) / 100,
+        });
+      }
+    }
+    // Sort noCapItems highest spending first
+    noCapItems.sort((a, b) => b.spent - a.spent);
+
+    // 4. Derive Totals & Buffer
+    const sumOfCaps = Math.round(categoryCaps.reduce((acc, c) => acc + c.cap, 0) * 100) / 100;
+    const daysRemainingInMonth = getEasternDaysRemainingInMonth();
+
+    let totalRemaining: number | null = null;
+    let isOverTotal = false;
+    let overTotalAmount = 0;
+    let buffer: number | null = null;
+    let capsExceedTotal = false;
+
+    if (totalCap !== null) {
+      if (spentSoFar > totalCap) {
+        isOverTotal = true;
+        overTotalAmount = Math.round((spentSoFar - totalCap) * 100) / 100;
+        totalRemaining = 0;
+      } else {
+        totalRemaining = Math.round((totalCap - spentSoFar) * 100) / 100;
+      }
+
+      buffer = Math.round((totalCap - sumOfCaps) * 100) / 100;
+      if (sumOfCaps > totalCap) {
+        capsExceedTotal = true;
+      }
+    }
+
+    return {
+      data: {
+        spentSoFar,
+        totalCap,
+        totalRemaining,
+        isOverTotal,
+        overTotalAmount,
+        daysRemainingInMonth,
+        sumOfCaps,
+        buffer,
+        capsExceedTotal,
+        categoryItems,
+        noCapItems,
+        issues,
+        excludedTransactionsCount,
+      },
+    };
+  } catch (error) {
+    console.error('❌ Error fetching budget data:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to load budget data from Google Sheet.',
+    };
+  }
+}
+
 
 
